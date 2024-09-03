@@ -27,6 +27,12 @@ export default function MainPage() {
     e.preventDefault(); 
     setMessage(assetName)
   }
+  
+  // const handleDisconnect = () => {
+  //   if (socket) {
+  //     socket.close();
+  //   }
+  // };
 
   return (
     <>
@@ -44,9 +50,11 @@ export default function MainPage() {
           <Button type='submit' name='START' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
                                            hover:bg-blue-600 focus:outline-none focus:ring-2
                                            focus:ring-blue-400 focus:ring-opacity-75 mr-4'/>
-          <Button type='click' name='STOP' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
+          {/* <Button name='STOP' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
                                            hover:bg-blue-600 focus:outline-none focus:ring-2
-                                           focus:ring-blue-400 focus:ring-opacity-75'/>
+                                           focus:ring-blue-400 focus:ring-opacity-75'
+                                          //  onClick={handleDisconnect} disabled={!connected} */}
+                                           {/* /> */}
         </form>
       </div>
       </div>

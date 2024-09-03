@@ -2,10 +2,9 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import Chart from './Chart';
 
+
 export default function WebSocketProvider({ message }) {
     const [socket, setSocket] = useState(null);
-    // const [messages, setMessages] = useState([]);
-    // const [inputMessage, setInputMessage] = useState('');
     const [data, setData] = useState({
         xAxis: [],
         yAxis: [],
@@ -13,8 +12,11 @@ export default function WebSocketProvider({ message }) {
     })
     const [isOpen, setIsOpen] = useState(false);
 
+ 
     useEffect(() => {
-        const ws = new WebSocket('ws://192.168.0.126:8080/realtimews');
+        const token = sessionStorage.getItem('Token')
+        console.log(token)
+        const ws = new WebSocket(`ws://192.168.0.126:8080/realtimews?auth=${token}`);
 
         ws.onopen = () => {
             console.log('WebSocket connection established.');
@@ -24,12 +26,12 @@ export default function WebSocketProvider({ message }) {
         ws.onmessage = (event) => {
 
             try {
-                const realTimeData = JSON.parse(event.data)
-
+                const realTimeData = JSON.parse(event.data);
+                console.log('Received data:', realTimeData);
                 setData((prevData) => ({
-                    xAxis: [...prevData.xAxis, realTimeData.spectrum_x.slice(-100)],
-                    yAxis: [...prevData.yAxis, realTimeData.spectrum_y.slice(-100)],
-                    zAxis: [...prevData.zAxis, realTimeData.spectrum_z.slice(-100)],
+                    xAxis: [...prevData.xAxis, realTimeData.spectrum_x],
+                    yAxis: [...prevData.yAxis, realTimeData.spectrum_y],
+                    zAxis: [...prevData.zAxis, realTimeData.spectrum_z],
 
                 }))
             } catch (error) {
@@ -59,9 +61,9 @@ export default function WebSocketProvider({ message }) {
     }, []);
 
     useEffect(() => {
-        if (socket && message) {
-
-            if (message.trim() !== '') {
+        if (socket && message && isOpen) {
+            console.log('===> readyState', socket.readyState)
+            if (socket.readyState === WebSocket.OPEN) {
                 socket.send(message);
                 console.log('Message sent:', message);
             } else {
@@ -70,13 +72,12 @@ export default function WebSocketProvider({ message }) {
         }
     }, [message, socket, isOpen])
 
-
     return (
         <div>
             <div className="p-20">
-                <Chart visibility='X-Axis' />
-                <Chart visibility='Y-Axis' />
-                <Chart visibility='Z-Axis' />
+                {/* <Chart vis='X-Axis' />
+                <Chart vis='Y-Axis' />
+                <Chart vis='Z-Axis' /> */}
             </div>
         </div>
     )

@@ -3,7 +3,7 @@ import Selection from "../../components/Selection";
 import Nav from "../layouts/Nav";
 import Button from "../../components/Button";
 import Table from "../../components/Table";
-import DataFetching from "../../functions/DataFetching";
+import { DataFetch, RowDataFetch } from "../../functions/DataFetching";
 import { generateUniqueId, addingUniqueId } from "../../functions/ProduceRows";
 import { useState, useEffect } from "react";
 import CheckBx from "../../components/CheckBx";
@@ -34,10 +34,11 @@ export default function Charts() {
   const [tableRows, setTableRows] = useState([]);
   const [selectedCheckboxes, setSelectedCheckboxes] = useState([]);
   const [showCheckboxes, setShowCheckboxes] = useState(true);
-  const [isTableVisible, setIsTableVisible] = useState(false); 
-  const [isChartsVisible, setIsChartsVisible] = useState(false); 
+  const [isTableVisible, setIsTableVisible] = useState(false);
+  const [isChartsVisible, setIsChartsVisible] = useState(false);
   const [columns, setColumns] = useState([])
   const [selectedRow, setSelectedRow] = useState(null);
+  const [waveData, setWaveData] = useState([]);
 
   useEffect(() => {
     const now = new Date();
@@ -46,7 +47,6 @@ export default function Charts() {
 
     setEDate(defaultDate);
     setETime(defaultTime);
-
   }, []);
 
   const handleSubmit = async (e) => {
@@ -79,28 +79,53 @@ export default function Charts() {
       sUnixTime = eUnixTime - (24 * 60 * 60);
     }
 
-    await DataFetching(asset, sUnixTime, eUnixTime, selectedCheckboxes)
+    await DataFetch(asset, sUnixTime, eUnixTime, selectedCheckboxes)
       .then(result => addingUniqueId(result))
       .then(result => setTableRows(result))
-      .then(()=>setIsTableVisible(true))
+      .then(() => setIsTableVisible(true))
       .then(generateUniqueId.reset())
 
 
     setColumns(ProduceCols(selectedCheckboxes));
+
     // console.log(columns)
-    // console.log('===> tablerows', tableRows)
+    console.log('===> tablerows', tableRows)
   }
 
   const handleSelectionChange = (e) => {
     setAsset(e.target.value);
   };
 
-  const handleRowSelect = (selectedRowData) => {
+  const handleRowSelect = ((selectedRowData) => {
     setSelectedRow(selectedRowData)
-    console.log(selectedRow['created_at'])
-    const detail_asset_id = selectedRow['asset_id']
-    const detail_created_at = selectedRow['created_at']
-  };
+    // console.log(selectedRow['created_at'])
+    // const created_at_row= selectedRow['created_at']
+    // const asset_id_row = selectedRow['asset_id']
+    // console.log(created_at_row, asset_id_row)
+    // RowDataFetch({
+    //   "asset_id": selectedRow['asset_id'],
+    //   "created_at": selectedRow['created_at'],
+    // })
+  });
+
+  useEffect(() => {
+    if(selectedRow) {
+    const created_at_row= selectedRow['created_at']
+    const asset_id_row = selectedRow['asset_id']
+    console.log(created_at_row, asset_id_row)
+  
+
+    RowDataFetch({
+      "asset_id":asset_id_row, 
+      "created_at":created_at_row,
+    })
+    .then(resp => setWaveData(resp[0]))    
+    .then(setIsChartsVisible(true))
+    .catch(error => console.log('===> row fetching error', error))
+  }
+  },[selectedRow]);
+
+  console.log(waveData)
 
   return (
     <div>
@@ -148,9 +173,9 @@ export default function Charts() {
             isVisible={showCheckboxes} setIsVisible={setShowCheckboxes} />
         </div>
         {isTableVisible && <Table rows={tableRows} columns={columns} text='mb-20' onRowSelect={handleRowSelect} />}
-        {isChartsVisible && <Chart visibility='X-Axis' />}
-        {isChartsVisible && <Chart visibility='Y-Axis' />}
-        {isChartsVisible && <Chart visibility='Z-Axis' />}
+        {isChartsVisible && <Chart vis='X-Axis' wave_data={waveData}/>}
+        {/* {isChartsVisible && <Chart vis='Y-Axis' />}
+        {isChartsVisible && <Chart vis='Z-Axis' />} */}
       </div>
     </div>
   )

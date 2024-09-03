@@ -10,15 +10,17 @@ export default function LoginPage() {
             userid: e.target.id.value,
             password: e.target.password.value
         };
-
+        console.log(credential)
         try {
             const response = await axios.post(
                 'http://192.168.0.126:8080/login',
                 credential
             );
-
+            
             if (response.status === 200) {
                 const token = response.headers['authorization'];
+                // token = token.substring(7)
+
                 sessionStorage.setItem('Token', token);
             }
             window.location.href = '/home';

@@ -15,7 +15,7 @@ const addingUniqueId = (rows) => {
     if (Array.isArray(rows)) {
         return rows.map((row) => ({
             ...row,
-            created_at: formatUnixToLocalTime(row.created_at),
+            local_time: formatUnixToLocalTime(row.created_at),
             id: generateUniqueId.next(),
         }));
     } else return [];
