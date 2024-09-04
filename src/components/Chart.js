@@ -1,28 +1,61 @@
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import ReactECharts from 'echarts-for-react';
+// import moment from 'moment';
+// import { parseISO, getTime } from 'date-fns';
 
-export default function Chart({ vis, wave_data }) {
+export default function Chart({ key, cols, vis, data }) {
 
-  const features = ['X-Axis', 'Y-Axis', 'Z-Axis'];
-  const visibility = { vis };
+  const features = cols
+  const visibility = vis;
 
   const selected_features = features.reduce((acc, series) => {
     acc[series] = series === visibility
     return acc;
   }
-    , {});
+    , {}); // json데이터... trues and falses ... 
 
-  const generateTimeSeriesData = (wave_data) => {
-    const startTime = new Date(wave_data['created_at']);
-    const interval = 78; // 1 second interval
-    return wave_data['spectrum_x_amp'].map((value, index) => [new Date(startTime.getTime() + index * interval).toISOString(), value]);
+  // console.log('===> selectedfeatures', selected_features)
+
+  const transformData = (data, feature) => {
+    return data.map(item => [
+      item.created_at* 1000, 
+      item[feature]
+    ]);
   };
 
-  const xAxisData = generateTimeSeriesData(wave_data);
+  // const transformData = (data, feature) => {
+  //   return data.map(item => [
+  //     // new Date(item.local_time).getTime(), 
+  //     // moment(item.local_time, moment.ISO_8601).valueOf(),
+  //     getTime(parseISO(item.local_time)), 
+  //     item[feature]
+  //   ]);
+  // };
+
+  // const transformData = (data, feature) => {
+  //   return data.map(item => {
+  //     const date = moment(item.local_time, moment.ISO_8601, true); // 'true' enables strict parsing
+  //     const timestamp = date.isValid() ? date.valueOf() : NaN;
+  //     console.log(`local_time: ${item.local_time}, timestamp: ${timestamp}`);
+  //     return [timestamp, item[feature]];
+  //   });
+  // };
+
+  const seriesData = features.map(feature => ({
+    name: feature,
+    type: 'line',
+    data: transformData(data, feature),
+    symbol: 'none'
+  }));
+
+  // console.log('==>sereisData', seriesData);
+
+  console.log('===> trans', transformData(data, features))
+
 
   const options = {
     title: {
-      text: `${vis} Chart`,
+      text: `${vis} chart`,
     },
     tooltip: {
       trigger: 'axis',
@@ -33,44 +66,27 @@ export default function Chart({ vis, wave_data }) {
     },
     xAxis: {
       type: 'time',
-      data:  xAxisData
+      axisLabel: {
+        formatter: (value) => {
+          const date = new Date(value);
+          // Customize the format as needed
+          return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:00`;
+        },
+        // rotate: 45, 
+        // formatter: (value) => {
+        //   // Format the time label to make it more readable
+        //   const date = new Date(value);
+        //   return `${date.getMonth() + 1}/${date.getDate()}`;
+        // },
+      },
     },
     yAxis: {
       type: 'value',
     },
-    series: [
-      {
-        name: 'X-Axis',
-        data:  wave_data.spectrum_x_amp ,
-        type: 'line',
-      },
-      {
-        name: 'Y-Axis',
-        data: [['2024-08-01T00:00:00Z', 320],
-        ['2024-08-02T00:00:00Z', 332],
-        ['2024-08-03T00:00:00Z', 301],
-        ['2024-08-04T00:00:00Z', 334],
-        ['2024-08-05T00:00:00Z', 390],
-        ['2024-08-06T00:00:00Z', 330],
-        ['2024-08-07T00:00:00Z', 320],
-        ],
-        type: 'line',
-      },
-      {
-        name: 'Z-Axis',
-        data: [['2024-08-01T00:00:00Z', 320],
-        ['2024-08-02T00:00:00Z', 446],
-        ['2024-08-03T00:00:00Z', 501],
-        ['2024-08-04T00:00:00Z', 434],
-        ['2024-08-05T00:00:00Z', 490],
-        ['2024-08-06T00:00:00Z', 530],
-        ['2024-08-07T00:00:00Z', 520],
-        ],
-        type: 'line',
-      },
-    ],
+    series: seriesData,
   };
 
+  console.log('===> options', options)
   return (
     <div>
       <ReactECharts option={options} />

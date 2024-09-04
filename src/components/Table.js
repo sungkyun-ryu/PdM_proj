@@ -3,26 +3,28 @@ import Paper from '@mui/material/Paper';
 import { useState, useEffect } from 'react';
 
 
-export default function Table({ rows, columns, text, onRowSelect}) {
+export default function Table({ rows, columns, text, 
+    // onRowSelect
+}) {
 
-    const [selectedRow, setSelectedRow] = useState(null);
+    // const [selectedRow, setSelectedRow] = useState(null);
 
-    const handleRowSelection = (newSelectionModel) => {
-        const newSelectedRow = newSelectionModel.length > 0 ? newSelectionModel[0] : null;
-        setSelectedRow(newSelectedRow);
-    };
+    // const handleRowSelection = (newSelectionModel) => {
+    //     const newSelectedRow = newSelectionModel.length > 0 ? newSelectionModel[0] : null;
+    //     setSelectedRow(newSelectedRow);
+    // };
 
-    const getSelectedRowData = () => {
-        if (selectedRow === null) {
-            return null; 
-        }
-        return rows.find(row => row.id === selectedRow);
-    };
+    // const getSelectedRowData = () => {
+    //     if (selectedRow === null) {
+    //         return null; 
+    //     }
+    //     return rows.find(row => row.id === selectedRow);
+    // };
 
-    useEffect(() => {
-        const selectedRowData = getSelectedRowData();
-        onRowSelect(selectedRowData);
-    }, [selectedRow, rows, onRowSelect]);
+    // useEffect(() => {
+    //     const selectedRowData = getSelectedRowData();
+    //     onRowSelect(selectedRowData);
+    // }, [selectedRow, rows, onRowSelect]);
 
     return (
         <div>
@@ -36,8 +38,8 @@ export default function Table({ rows, columns, text, onRowSelect}) {
                     // initialState={{ pagination: { paginationModel } }}
                     pageSizeOptions={[5, 10]}
                     // checkboxSelection
-                    selectionModel={selectedRow}
-                    onRowSelectionModelChange={handleRowSelection}
+                    // selectionModel={selectedRow}
+                    // onRowSelectionModelChange={handleRowSelection}
                     sx={{
                         border: 0,
                         '& .MuiDataGrid-columnHeaders': {

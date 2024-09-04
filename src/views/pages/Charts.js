@@ -18,11 +18,11 @@ const asset_names = ['P.O.REEL', '#1-1 BRIDLE ROLL', 'ENTRY ACCUMULATOR', '#2-3 
   'UNCOILER', 'ENTRY BRIDLE ROLL', 'RECOILER', 'EXIT BRIDLE ROLL', 'DECOILER', '1-1 S-ROLL', '1-2 S-ROLL', '1-3 S-ROLL',
   '1-4 S-ROLL', '2-1 S-ROLL', '2-2 S-ROLL', '2-3 S-ROLL', '2-4 S-ROLL', 'RECOILER']
 
-const col_names = ['temperature', 'voltage', 'rms_x', 'rms_y', 'rms_z', 'rms_xyz', 'vel_rms_x', 'vel_rms_y', 'vel_rms_z', 'vel_rms_xyz',
+const col_names = ['rms_x', 'rms_y', 'rms_z', 'rms_xyz', 'vel_rms_x', 'vel_rms_y', 'vel_rms_z', 'vel_rms_xyz',
   'skewness_x', 'skewness_y', 'skewness_z', 'vel_skewness_x', 'vel_skewness_y', 'vel_skewness_z', 'kurtosis_x', 'kurtosis_y', 'kurtosis_z',
   'vel_kurtosis_x', 'vel_kurtosis_y', 'vel_kurtosis_z', 'crest_factor_x', 'crest_factor_y', 'crest_factor_z', 'vel_crest_factor_x',
   'vel_crest_factor_y', 'vel_crest_factor_z', 'peak_x', 'peak_y', 'peak_z', 'vel_peak_x', 'vel_peak_y', 'vel_peak_z', 'peak2peak_x',
-  'peak2peak_y', 'peak2peak_z', 'vel_peak2peak_x', 'vel_peak2peak_y', 'vel_peak2peak_z',]
+  'peak2peak_y', 'peak2peak_z', 'vel_peak2peak_x', 'vel_peak2peak_y', 'vel_peak2peak_z','temperature', 'voltage', ]
 
 export default function Charts() {
 
@@ -76,7 +76,7 @@ export default function Charts() {
       sUnixTime = Math.floor(sDateTime.getTime() / 1000);
     }
     else {
-      sUnixTime = eUnixTime - (24 * 60 * 60);
+      sUnixTime = eUnixTime - (7 * 24 * 60 * 60);
     }
 
     await DataFetch(asset, sUnixTime, eUnixTime, selectedCheckboxes)
@@ -87,45 +87,47 @@ export default function Charts() {
 
 
     setColumns(ProduceCols(selectedCheckboxes));
-
-    // console.log(columns)
-    console.log('===> tablerows', tableRows)
+    setIsChartsVisible(true);
+    // console.log('===> selectedcheck', selectedCheckboxes)
+    // console.log('===> tablerows', tableRows)
   }
 
   const handleSelectionChange = (e) => {
     setAsset(e.target.value);
   };
 
-  const handleRowSelect = ((selectedRowData) => {
-    setSelectedRow(selectedRowData)
-    // console.log(selectedRow['created_at'])
-    // const created_at_row= selectedRow['created_at']
-    // const asset_id_row = selectedRow['asset_id']
-    // console.log(created_at_row, asset_id_row)
-    // RowDataFetch({
-    //   "asset_id": selectedRow['asset_id'],
-    //   "created_at": selectedRow['created_at'],
-    // })
-  });
+  // const handleRowSelect = ((selectedRowData) => {
+  //   setSelectedRow(selectedRowData)
+  //   // console.log(selectedRow['created_at'])
+  //   // const created_at_row= selectedRow['created_at']
+  //   // const asset_id_row = selectedRow['asset_id']
+  //   // console.log(created_at_row, asset_id_row)
+  //   // RowDataFetch({
+  //   //   "asset_id": selectedRow['asset_id'],
+  //   //   "created_at": selectedRow['created_at'],
+  //   // })
+  // });
 
-  useEffect(() => {
-    if(selectedRow) {
-    const created_at_row= selectedRow['created_at']
-    const asset_id_row = selectedRow['asset_id']
-    console.log(created_at_row, asset_id_row)
-  
+  // useEffect(() => {
+  //   if(selectedRow) {
+  //   const created_at_row= selectedRow['created_at']
+  //   const asset_id_row = selectedRow['asset_id']
+  //   // console.log(created_at_row, asset_id_row)
 
-    RowDataFetch({
-      "asset_id":asset_id_row, 
-      "created_at":created_at_row,
-    })
-    .then(resp => setWaveData(resp[0]))    
-    .then(setIsChartsVisible(true))
-    .catch(error => console.log('===> row fetching error', error))
-  }
-  },[selectedRow]);
 
-  console.log(waveData)
+  //   RowDataFetch({
+  //     "asset_id":asset_id_row, 
+  //     "created_at":created_at_row,
+  //   })
+  //   .then(resp => setWaveData(resp[0]))    
+  //   .then(setIsChartsVisible(true))
+  //   .catch(error => console.log('===> row fetching error', error))
+
+  //   console.log('===> waveData::', waveData )
+  // }
+  // },[selectedRow]);
+
+  // console.log('===> waveData::', waveData['created_at'])
 
   return (
     <div>
@@ -172,8 +174,14 @@ export default function Charts() {
             selectedCheckboxes={selectedCheckboxes} setSelectedCheckboxes={setSelectedCheckboxes}
             isVisible={showCheckboxes} setIsVisible={setShowCheckboxes} />
         </div>
-        {isTableVisible && <Table rows={tableRows} columns={columns} text='mb-20' onRowSelect={handleRowSelect} />}
-        {isChartsVisible && <Chart vis='X-Axis' wave_data={waveData}/>}
+        {isTableVisible && <Table rows={tableRows} columns={columns} text='mb-20'
+        // onRowSelect={handleRowSelect} 
+        />}
+        {isChartsVisible && selectedCheckboxes.map((item) => (
+          <Chart key={item} cols={selectedCheckboxes} vis={item} data={tableRows} />
+        ))}
+
+        {/* {isChartsVisible && <Chart cols={selectedCheckboxes} vis={'rms_y'} data={tableRows}/>} */}
         {/* {isChartsVisible && <Chart vis='Y-Axis' />}
         {isChartsVisible && <Chart vis='Z-Axis' />} */}
       </div>
