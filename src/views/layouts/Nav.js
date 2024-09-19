@@ -1,6 +1,17 @@
 import Button from "../../components/Button";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Nav() {
+
+    const navigate = useNavigate();
+
+    const logout = () => {
+        sessionStorage.removeItem('Token');
+        sessionStorage.removeItem('userid');
+        navigate('/login');
+    }
+
     return (
         <>
             <div className="p-5">
@@ -21,7 +32,7 @@ export default function Nav() {
                     </div>         
                     <div className="items-center justify-center">
                         <Button name="LOGOUT" 
-                         
+                                func = {logout}
                                 text={"bg-white text-black text-xl font-bold px-3 py-1 rounded-full shadow hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"}/>
                     </div>
                 </h1>

@@ -4,30 +4,30 @@ import Button from "../../components/Button";
 import Selection from "../../components/Selection";
 import { useState, useRef } from "react";
 import WebSocketProvider from "../../components/WebSocketProvider";
-
-const asset_names = ['P.O.REEL', '#1-1 BRIDLE ROLL', 'ENTRY ACCUMULATOR', '#2-3 BRIDLE ROLL', '#3-1 BRIDLE ROLL', 'EXIT ACCUMULATOR',
-  '#4-1 BRIDLE ROLL', 'TENSION REEL', '#1 P.O.REEL', '#2 P.O.REEL', '#1-1 BRIDLE ROLL', 'INLET SEAL ROLL UPPER', '#2-1 BRIDLE ROLL',
-  '#3-2 BRIDLE ROLL', 'OUTLET SEAL ROLL UPPER', '#4-2 BRIDLE ROLL', 'TENSION REEL', '#1-2 BRIDLE ROLL', 'ENTRY ACCUMULATOR',
-  '#2-1 BRIDLE ROLL', '#3-3 BRIDLE ROLL', '#4-1 BRIDLE ROLL', 'EXIT ACCUMULATOR', '#5-2 BRIDLE ROLL', 'TENSION REEL',
-  'LEFT REEL', 'MILL', 'RIGHT REEL', 'DCM COOLING BLOWER', 'LEFT REEL', 'MILL', 'RIGHT REEL', 'DCM COOLING BLOWER',
-  'UNCOILER', 'ENTRY BRIDLE ROLL', 'RECOILER', 'EXIT BRIDLE ROLL', 'DECOILER', '1-1 S-ROLL', '1-2 S-ROLL', '1-3 S-ROLL',
-  '1-4 S-ROLL', '2-1 S-ROLL', '2-2 S-ROLL', '2-3 S-ROLL', '2-4 S-ROLL', 'RECOILER']
-
+import { asset_names, ids_assets } from "../../components/Assets";
 
 export default function MainPage() {
 
   const [message, setMessage] = useState('');
   const [assetName, setAssetName] = useState('P.O.REEL')
+  const [assetId, setAssetId] = useState('471e8e21-9649-4405-8da7-ad8900ad0b49');
+
 
   const sendingMessage = (e) => {
     setAssetName(e.target.value)
   }
 
   const handleSubmit = (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     setMessage(assetName)
   }
-  
+
+  const handleIdChange = (e) => {
+    setAssetId(e.target.value);
+  };
+
+  const availableIds = ids_assets[assetName] || [];
+
   // const handleDisconnect = () => {
   //   if (socket) {
   //     socket.close();
@@ -40,25 +40,29 @@ export default function MainPage() {
         <Nav />
       </header>
       <div className='flex justify-center p-3'>
-      <div className='border-4 rounded-full border-black w-2/3 flex justify-center'>
-        <form className='flex items-center p-5' onSubmit={handleSubmit}>
-          <label className="flex text-xl font-bold p-3 items-center" > <span>Asset:</span> &nbsp;
-            <Selection choices={asset_names} text={'font-normal text-lg'} 
-            func={sendingMessage}
-             />
-          </label>
-          <Button type='submit' name='START' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
+        <div className='border-4 rounded-full border-black w-2/3 flex justify-between'>
+          <form className='flex items-center justify-between py-5 px-8 w-full' onSubmit={handleSubmit}>
+            <div className='flex'>
+              <label className="flex text-xl font-bold py-3 pr-8 items-center" > <span>Asset :</span> &nbsp;
+                <Selection choices={asset_names} text={'font-normal text-lg'}
+                  func={sendingMessage}
+                />
+              </label>
+
+              <label className="flex text-xl font-bold items-center" > <span>Asset ID :</span> &nbsp;
+                <Selection choices={availableIds} text={'font-normal text-lg'}
+                  func={handleIdChange} />
+              </label>
+            </div>
+
+            <Button type='submit' name='START' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
                                            hover:bg-blue-600 focus:outline-none focus:ring-2
                                            focus:ring-blue-400 focus:ring-opacity-75 mr-4'/>
-          {/* <Button name='STOP' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
-                                           hover:bg-blue-600 focus:outline-none focus:ring-2
-                                           focus:ring-blue-400 focus:ring-opacity-75'
-                                          //  onClick={handleDisconnect} disabled={!connected} */}
-                                           {/* /> */}
-        </form>
+
+          </form>
+        </div>
       </div>
-      </div>
-      <WebSocketProvider message = {message}/>
+      <WebSocketProvider message={message} />
     </>
 
   )

@@ -8,9 +8,9 @@ const DataFetch = async (asset_name, sUnix, eUnix, columns) => {
       "end_at": eUnix,
       "cols": columns,
     };
-    console.log('===> params', params);
+    // console.log('===> params', params);
     const token = sessionStorage.getItem('Token');
-    console.log('===> token', token)
+    // console.log('===> token', token)
     
 
     const response = await axios.post('http://192.168.0.126:8080/charts', params

@@ -20,8 +20,9 @@ export default function LoginPage() {
             if (response.status === 200) {
                 const token = response.headers['authorization'];
                 // token = token.substring(7)
-
                 sessionStorage.setItem('Token', token);
+                sessionStorage.setItem('userid', credential.userid);
+
             }
             window.location.href = '/home';
 

@@ -14,9 +14,10 @@ export default function WebSocketProvider({ message }) {
 
  
     useEffect(() => {
-        const token = sessionStorage.getItem('Token')
-        console.log(token)
-        const ws = new WebSocket(`ws://192.168.0.126:8080/realtimews?auth=${token}`);
+        const token = sessionStorage.getItem('Token');
+        const userid = sessionStorage.getItem('userid');
+        // console.log(token)
+        const ws = new WebSocket(`ws://192.168.0.126:8080/realtimews?userid=${userid}`);
 
         ws.onopen = () => {
             console.log('WebSocket connection established.');
