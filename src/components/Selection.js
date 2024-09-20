@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 
-export default function Selection({choices, func, text, d_value}) {
+export default function Selection({choices, func, text, d_value, selectedValue}) {
 
   const [options, setOptions] = useState([]);
 
@@ -10,8 +10,8 @@ export default function Selection({choices, func, text, d_value}) {
 
   return (
     <div>
-      <select onChange= {func} className={text} >
-      {/* <option selected>{d_value}</option> */}
+      <select value={selectedValue} onChange= {func} className={text}>
+      <option value= '' selected>{d_value}</option>
         {options.map((option, index) => (
           <option key={index} value={option}>
             {option}

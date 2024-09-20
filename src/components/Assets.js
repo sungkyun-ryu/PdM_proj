@@ -48,6 +48,5 @@ export const ids_assets = {
     'OUTLET SEAL ROLL UPPER' : ['eb55dfdd-34b5-41bf-8e7c-0c454082598a'],
     'P.O.REEL' : ['351d2688-2c91-4963-8db0-53fb4fce18ce'],
     'UNCOILER' : ['7c2b497a-bd63-4c2d-a11a-e1967f69704d'],
-    
   
 }

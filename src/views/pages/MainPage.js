@@ -2,37 +2,30 @@ import Nav from "../layouts/Nav";
 import Chart from "../../components/Chart";
 import Button from "../../components/Button";
 import Selection from "../../components/Selection";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import WebSocketProvider from "../../components/WebSocketProvider";
 import { asset_names, ids_assets } from "../../components/Assets";
 
 export default function MainPage() {
 
   const [message, setMessage] = useState('');
-  const [assetName, setAssetName] = useState('P.O.REEL')
-  const [assetId, setAssetId] = useState('471e8e21-9649-4405-8da7-ad8900ad0b49');
-
-
-  const sendingMessage = (e) => {
+  const [assetName, setAssetName] = useState('')
+  const [assetId, setAssetId] = useState('');
+  const availableIds = ids_assets[assetName] || [];
+  
+  const handleNameChange = (e) => {
     setAssetName(e.target.value)
+    setAssetId('')
   }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setMessage(assetName)
-  }
-
+  
   const handleIdChange = (e) => {
     setAssetId(e.target.value);
   };
-
-  const availableIds = ids_assets[assetName] || [];
-
-  // const handleDisconnect = () => {
-  //   if (socket) {
-  //     socket.close();
-  //   }
-  // };
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setMessage(assetId)
+  }
 
   return (
     <>
@@ -40,18 +33,19 @@ export default function MainPage() {
         <Nav />
       </header>
       <div className='flex justify-center p-3'>
-        <div className='border-4 rounded-full border-black w-2/3 flex justify-between'>
+        <div className='border-4 rounded-full border-black w-auto flex justify-between'>
           <form className='flex items-center justify-between py-5 px-8 w-full' onSubmit={handleSubmit}>
-            <div className='flex'>
+            <div className='flex mr-10'>
               <label className="flex text-xl font-bold py-3 pr-8 items-center" > <span>Asset :</span> &nbsp;
                 <Selection choices={asset_names} text={'font-normal text-lg'}
-                  func={sendingMessage}
+                  func={handleNameChange} d_value={'Please Select Asset Name'}
                 />
               </label>
 
               <label className="flex text-xl font-bold items-center" > <span>Asset ID :</span> &nbsp;
                 <Selection choices={availableIds} text={'font-normal text-lg'}
-                  func={handleIdChange} />
+                  func={handleIdChange} d_value={'Please Select Asset Id'}
+                  selectedValue={assetId} />
               </label>
             </div>
 
@@ -64,6 +58,5 @@ export default function MainPage() {
       </div>
       <WebSocketProvider message={message} />
     </>
-
   )
 }

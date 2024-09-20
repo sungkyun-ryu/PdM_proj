@@ -1,34 +1,43 @@
 import ReactECharts from 'echarts-for-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-
-export default function Chart({ key, cols, vis, data }) {
+export default function Chart({ cols, vis, data, chartClickEvent, }) {
 
   const chartRef = useRef(null);
 
-  const features = cols;
-  const visibility = vis;
-
-  const selected_features = features.reduce((acc, series) => {
-    acc[series] = series === visibility
-    return acc;
-  }
-    , {}); // json데이터... trues and falses ... 
+  const [selectedFeatures, setSelectedFeatures] = useState(
+    cols.reduce((acc, series) => {
+      acc[series] = series === vis;
+      return acc;
+    }, {})
+  );
+  const [zoomState, setZoomState] = useState({ start: 0, end: 100 });
 
   const transformData = (data, feature) => {
     return data.map(item =>
       [item.created_at * 1000, item[feature]],
     )
   };
+  const handleLegendClick = (params) => {
+    setSelectedFeatures(prev => ({
+      ...prev,
+      [params.name]: !prev[params.name],
+    }));
+  };
 
-  const seriesData = features.map(feature => ({
+  const seriesData = cols.map(feature => ({
     name: feature,
     type: 'line',
     data: transformData(data, feature),
-    symbol: 'none',
+    symbol: 'circle',
+    symbolSize: 3,
+    emphasis: {
+      itemStyle: {
+        color: '#FF0000',
+      },
+    },
   }));
-
-
+  
   const options = {
     title: {
       text: `${vis} chart`,
@@ -39,11 +48,11 @@ export default function Chart({ key, cols, vis, data }) {
       trigger: 'axis',
     },
     legend: {
-      data: features,
-      selected: selected_features,
+      data: cols,
+      selected: selectedFeatures,
       top: '5%',
       left: 'center',
-      bottom: '0%'
+      bottom: '0%',
     },
     grid: {
       left: '15%',
@@ -63,37 +72,49 @@ export default function Chart({ key, cols, vis, data }) {
     yAxis: {
       type: 'value',
     },
-    series: seriesData,
+    series: [
+      ...seriesData,
+    ],
     dataZoom:
     {
       type: 'inside',
-      start: 0,
-      end: 100,
+      start: zoomState.start,
+      end: zoomState.end,
     }
   };
+    
+  useEffect(() => {
+    const chartInstance = chartRef.current?.getEchartsInstance();
+    
+    if (chartInstance) {
+      const updateZoomState = () => {
+        const currentZoom = chartInstance.getOption().dataZoom[0];
+        setZoomState({ start: currentZoom.start, end: currentZoom.end })
+      }
+      chartInstance.on('dataZoom', updateZoomState);
+
+      return () => {
+        chartInstance.off('dataZoom', updateZoomState);
+      };
+    }
+  }, [chartClickEvent]);
 
   useEffect(() => {
     const chartInstance = chartRef.current?.getEchartsInstance();
-    console.log(chartInstance)
-
-    const handleChartClick = (e) => {
-      console.log('Clicked:', e);
-      // You can handle the click event here
-      // For example, you can check which data point was clicked
-    };
-
+    setZoomState({start:0, end:100})
+    setSelectedFeatures(cols.reduce((acc, series) => {
+      acc[series] = series === vis;
+      return acc;
+    }, {}))
     if (chartInstance) {
-      chartInstance.on('click', handleChartClick);
+      chartInstance.on('legendselectchanged', handleLegendClick); 
+      chartInstance.on('click', chartClickEvent);
+      return () => {
+        chartInstance.off('legendselectchanged', handleLegendClick);
+        chartInstance.off('click', chartClickEvent);
+      };
     }
-
-    // Cleanup function to remove the event listener
-    return () => {
-      if (chartInstance) {
-        chartInstance.off('click', handleChartClick);
-      }
-    };
   }, [data]);
-  
 
 
   return (

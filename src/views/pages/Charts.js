@@ -3,19 +3,19 @@ import Selection from "../../components/Selection";
 import Nav from "../layouts/Nav";
 import Button from "../../components/Button";
 import Table from "../../components/Table";
-import { DataFetch, RowDataFetch } from "../../functions/DataFetching";
+import { PostDataFetch, RowDataFetch } from "../../functions/DataFetching";
 import { generateUniqueId, addingUniqueId } from "../../functions/ProduceRows";
 import { useState, useEffect, useRef } from "react";
 import CheckBx from "../../components/CheckBx";
 import ProduceCols from "../../functions/ProduceCols";
 import { asset_names, col_names, ids_assets } from "../../components/Assets";
+import Modal from "../../components/Modal";
+import Toast from "../../components/Toast";
 
 export default function Charts() {
 
-  const [asset, setAsset] = useState('P.O.REEL');
-  const [assetId, setAssetId] = useState('471e8e21-9649-4405-8da7-ad8900ad0b49');
-  // const [sDate, setSDate] = useState('');
-  // const [sTime, setSTime] = useState('');
+  const [asset, setAsset] = useState('');
+  const [assetId, setAssetId] = useState('');
   const [defaultDate, setDefaultDate] = useState('');
   const [defaultTime, setDefaultTime] = useState('');
   const sDate = useRef('')
@@ -23,45 +23,38 @@ export default function Charts() {
   const eDate = useRef('')
   const eTime = useRef('')
 
-
   const [tableRows, setTableRows] = useState([]);
   const checkboxesRef = useRef([]);
   const [showCheckboxes, setShowCheckboxes] = useState(true);
   const [isTableVisible, setIsTableVisible] = useState(false);
   const [isChartsVisible, setIsChartsVisible] = useState(false);
   const [columns, setColumns] = useState([])
-  // const [selectedRow, setSelectedRow] = useState(null);
-  // const [waveData, setWaveData] = useState([]);
 
-  useEffect(() => {
-    const now = new Date();
-    const nowDate = now.toISOString().split('T')[0];
-    const nowTime = now.toTimeString().split(' ')[0].substring(0, 5);
- 
-    setDefaultDate(nowDate);
-    setDefaultTime(nowTime);
-
-    eDate.current = nowDate; 
-    eTime.current = nowTime; 
-    
-  }, []);
+  const verticalLines = useRef([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const availableIds = ids_assets[asset] || [];
 
   const handleSubmit = async (e) => {
 
     e.preventDefault();
 
     setShowCheckboxes(false);
-
+        
+    if (asset === '') {
+      alert('Please Select Asset Name')
+    }
+    
+    if (asset !== '' && assetId === '') {alert('Please Select Asset Id')}
+    
     if (checkboxesRef.current.length === 0) {
       alert('Please select at least one checkbox.');
       setShowCheckboxes(true);
-      return;
-    }
+      return;    }
 
     let eUnixTime;
     let sUnixTime;
-
-    
 
     if (eDate.current && eTime.current) {
       const eDateTimeString = `${eDate.current}T${eTime.current}`;
@@ -73,76 +66,126 @@ export default function Charts() {
       const sDateTimeString = `${sDate.current}T${sTime.current}`;
       const sDateTime = new Date(sDateTimeString);
       sUnixTime = Math.floor(sDateTime.getTime() / 1000);
+    } else if (sDate.current) {
+      sTime.current = '00:00'
+      const sDateTimeString = `${sDate.current}T${sTime.current}`;
+      const sDateTime = new Date(sDateTimeString);
+      sUnixTime = Math.floor(sDateTime.getTime() / 1000);
     }
     else {
       sUnixTime = eUnixTime - (7 * 24 * 60 * 60);
     }
- 
-    
-    await DataFetch(asset, sUnixTime, eUnixTime, checkboxesRef.current)
-      .then(result => addingUniqueId(result))
-      .then(result => setTableRows(result))
-      .then(() => setIsTableVisible(true))
-      .then(generateUniqueId.reset())
 
-    setColumns(ProduceCols(checkboxesRef.current));
-    setIsChartsVisible(true);
+    await PostDataFetch({
+      "asset_name": asset,
+      // "asset_id" : assetId,
+      "start_at": sUnixTime,
+      "end_at": eUnixTime,
+      "cols": checkboxesRef.current,
+    }, 'http://192.168.0.126:8080/charts')
+      // .then(result => addingUniqueId(result))
+      // .then(result => setTableRows(result))
+      // .then(()=>setColumns(ProduceCols(checkboxesRef.current)))
+      // .then(() => setIsTableVisible(true))
+      // .then(() => setIsChartsVisible(true))
+      // .then(generateUniqueId.reset())
+
+      .then(result => {
+        const uniqueData = addingUniqueId(result);
+        setTableRows(uniqueData);
+        setColumns(ProduceCols(checkboxesRef.current));
+    
+        if (uniqueData.length > 0) {
+          setIsTableVisible(true);
+          setIsChartsVisible(true);
+          setShowCheckboxes(false);
+        } else {
+          setIsTableVisible(false);
+          setIsChartsVisible(false);
+          setShowCheckboxes(true);
+          alert('No data available'); 
+        }
+
+        return uniqueData; 
+      })
+      .then(() => generateUniqueId.reset())
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        // Handle errors here if needed
+      });
+
+
+      verticalLines.current = [];
+
   }
 
   const handleSelectionChange = (e) => {
     setAsset(e.target.value);
-
-    const associated_ids = ids_assets[asset];
-    if (associated_ids) {
-      if (associated_ids.length === 1) {
-        setAssetId(associated_ids[0])
-      } else {
-        setAssetId(null)
-      }
-    } else {
-      setAssetId(null)
-    }
   };
 
   const handleIdChange = (e) => {
     setAssetId(e.target.value);
   };
 
-  const availableIds = ids_assets[asset] || [];
+  const handleChartClick = (params) => {
+    if (params && params.componentType === 'series' && params.seriesType === 'line') {
+      const xValue = params.data[0];
+  
+      if (verticalLines.current.length === 1)
+      {
+        verticalLines.current = [...verticalLines.current, xValue];
+        setModalOpen(true);
+      } else {
+        verticalLines.current = [xValue]
+        setToastMessage('Start Time saved successfully.');
+        setShowToast(true);
+      }
+    }
+  };
 
-  // const handleRowSelect = ((selectedRowData) => {
-  //   setSelectedRow(selectedRowData)
-  //   // console.log(selectedRow['created_at'])
-  //   // const created_at_row= selectedRow['created_at']
-  //   // const asset_id_row = selectedRow['asset_id']
-  //   // console.log(created_at_row, asset_id_row)
-  //   // RowDataFetch({
-  //   //   "asset_id": selectedRow['asset_id'],
-  //   //   "created_at": selectedRow['created_at'],
-  //   // })
-  // });
+  const handleConfirm = () => {
+    PostDataFetch({
+      "asset_id" : assetId,
+      "start_at" : verticalLines[0],
+      "end_at" : verticalLines[1],
+    } , 'http://192.168.0.126:8080/savebookmark')
+    verticalLines.current = []
+    setModalOpen(false);
+  };
 
-  // useEffect(() => {
-  //   if(selectedRow) {
-  //   const created_at_row= selectedRow['created_at']
-  //   const asset_id_row = selectedRow['asset_id']
-  //   // console.log(created_at_row, asset_id_row)
+  const handleClose = () => {
+    verticalLines.current = []
+    setModalOpen(false);
+  };
 
+  useEffect(() => {
+    const now = new Date();
+    const nowDate = now.toISOString().split('T')[0];
+    const nowTime = now.toTimeString().split(' ')[0].substring(0, 5);
 
-  //   RowDataFetch({
-  //     "asset_id":asset_id_row, 
-  //     "created_at":created_at_row,
-  //   })
-  //   .then(resp => setWaveData(resp[0]))    
-  //   .then(setIsChartsVisible(true))
-  //   .catch(error => console.log('===> row fetching error', error))
+    setDefaultDate(nowDate);
+    setDefaultTime(nowTime);
 
-  //   console.log('===> waveData::', waveData )
-  // }
-  // },[selectedRow]);
+    eDate.current = nowDate;
+    eTime.current = nowTime;
 
-  // console.log('===> waveData::', waveData['created_at'])
+  }, []);
 
+  useEffect(() => {
+  }, [verticalLines]);
+  
+  useEffect(() => {
+    if (verticalLines.current.length > 1) { setModalOpen(true) }
+  }, [verticalLines.current])
+
+  useEffect(() => {
+    if (verticalLines.current.length === 1) {
+      setToastMessage('Start Time saved successfully.')
+      setShowToast(true);
+    }
+  }, [verticalLines.current])
+
+  
   return (
     <div>
       <header className='bg-black p-3'>
@@ -150,46 +193,44 @@ export default function Charts() {
       </header>
       <div className="flex justify-center items-center p-3">
         <div className=' w-5/6 justify-center items-center p-10 mb-10 border-b-4 border-gray-800 py-2'>
-          <form onSubmit={handleSubmit}>
-            <div>
-              <div className='flex justify-center items-center py-2'>
+          <form className='flex justify-center items-center' onSubmit={handleSubmit}>
+            <div className='w-auto'>
+              <div className='flex justify-start items-center py-2 '>
                 <label className="flex text-xl pr-24 font-bold items-center" > <span>Asset :</span> &nbsp;
                   <Selection choices={asset_names} text={'font-normal text-lg'}
-                    func={handleSelectionChange}
+                    func={handleSelectionChange} d_value={'Select Asset Name'}
                   />
                 </label>
 
                 <label className="flex text-xl font-bold items-center" > <span>Asset ID :</span> &nbsp;
                   <Selection choices={availableIds} text={'font-normal text-lg'}
-                    func={handleIdChange} />
+                    func={handleIdChange} d_value={'Select Asset Id'}
+                    selectedValue={assetId}
+                    />
                 </label>
               </div>
 
-              <div className='flex justify-center items-center py-2'>
+              <div className='flex justify-start items-center py-2'>
                 <div className='flex justify-start '>
                   <div className="flex items-center pr-24">
                     <label htmlFor='date' className="text-xl block font-bold">Start :</label> &nbsp;
                     <input type='date' id='sDate' name='sDate' className=' text-lg'
-                      // onChange={(e) => setSDate(e.target.value)} 
                       onChange={(e) => (sDate.current = e.target.value)}
-                      />
+                    />
                     <input type='time' id='sTime' name='sTime' className=' text-lg'
-                      // onChange={(e) => setSTime(e.target.value)} 
                       onChange={(e) => (sTime.current = e.target.value)}
-                      />
+                    />
                   </div>
 
                   <div className="flex pr-20 items-center ">
                     <label htmlFor='time' className="text-xl block font-bold pl-1 ">End :</label>
-                    
+
                     <input type='date' id='eDate' name='eDate' className='text-lg' defaultValue={defaultDate}
-                      // onChange={(e) => setEDate(e.target.value)} 
                       onChange={(e) => (eDate.current = e.target.value)}
-                      />
+                    />
                     <input type='time' id='eTime' name='eTime' className=' text-lg' defaultValue={defaultTime}
-                      // onChange={(e) => setETime(e.target.value)} 
                       onChange={(e) => (eTime.current = e.target.value)}
-                      />              
+                    />
                   </div>
 
                 </div>
@@ -207,20 +248,25 @@ export default function Charts() {
       <div className='px-10 pb-24'>
         <div>
           <CheckBx text='font-bold text-xl' cols={col_names}
-                   isVisible={showCheckboxes} setIsVisible={setShowCheckboxes}
-                   ref = {checkboxesRef}
+            isVisible={showCheckboxes} setIsVisible={setShowCheckboxes}
+            ref={checkboxesRef}
           />
         </div>
-        {isTableVisible && <Table rows={tableRows} columns={columns} text='mb-20'
-        // onRowSelect={handleRowSelect} 
-        />}
+        {/* {!isTableVisible && !isChartsVisible && <p>No data to display. Please make a selection and submit.</p>} */}
+        {isTableVisible && <Table rows={tableRows} columns={columns} text='mb-20'/>}
         {isChartsVisible && checkboxesRef.current.map((item) => (
           <div key={item} className='mb-5 border-b pb-10 border-gray-300'>
-          <Chart key={item} cols={checkboxesRef.current} vis={item} data={tableRows} />
+            <Chart key={item} cols={checkboxesRef.current} vis={item} data={tableRows}
+              chartClickEvent={handleChartClick} />
+            <Modal isOpen={modalOpen} onClose={handleClose} onConfirm={handleConfirm}
+              text={<>
+                Do you want to bookmark the data between <br />
+                {new Date(verticalLines[0]).toLocaleString()} and {new Date(verticalLines[1]).toLocaleString()}?
+              </>} />
+            <Toast message={toastMessage} show={showToast} onClose={() => setShowToast(false)} />
           </div>
         ))}
       </div>
     </div>
   )
 };
-
