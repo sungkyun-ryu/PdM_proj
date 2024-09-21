@@ -256,7 +256,7 @@ export default function Charts() {
         {isTableVisible && <Table rows={tableRows} columns={columns} text='mb-20'/>}
         {isChartsVisible && checkboxesRef.current.map((item) => (
           <div key={item} className='mb-5 border-b pb-10 border-gray-300'>
-            <Chart key={item} cols={checkboxesRef.current} vis={item} data={tableRows}
+            <Chart key={item} cols={checkboxesRef.current} vis={item} sigData={tableRows}
               chartClickEvent={handleChartClick} />
             <Modal isOpen={modalOpen} onClose={handleClose} onConfirm={handleConfirm}
               text={<>

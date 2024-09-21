@@ -1,7 +1,7 @@
 import ReactECharts from 'echarts-for-react';
 import { useEffect, useRef, useState } from 'react';
 
-export default function Chart({ cols, vis, data, chartClickEvent, }) {
+export default function Chart({ cols, vis, sigData, chartClickEvent,  }) {
 
   const chartRef = useRef(null);
 
@@ -13,11 +13,12 @@ export default function Chart({ cols, vis, data, chartClickEvent, }) {
   );
   const [zoomState, setZoomState] = useState({ start: 0, end: 100 });
 
-  const transformData = (data, feature) => {
-    return data.map(item =>
+  const transformData = (sigData, feature) => {
+    return sigData.map(item =>
       [item.created_at * 1000, item[feature]],
     )
   };
+
   const handleLegendClick = (params) => {
     setSelectedFeatures(prev => ({
       ...prev,
@@ -28,7 +29,7 @@ export default function Chart({ cols, vis, data, chartClickEvent, }) {
   const seriesData = cols.map(feature => ({
     name: feature,
     type: 'line',
-    data: transformData(data, feature),
+    data: transformData(sigData, feature),
     symbol: 'circle',
     symbolSize: 3,
     emphasis: {
@@ -114,7 +115,7 @@ export default function Chart({ cols, vis, data, chartClickEvent, }) {
         chartInstance.off('click', chartClickEvent);
       };
     }
-  }, [data]);
+  }, [sigData]);
 
 
   return (

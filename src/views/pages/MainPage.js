@@ -11,20 +11,30 @@ export default function MainPage() {
   const [message, setMessage] = useState('');
   const [assetName, setAssetName] = useState('')
   const [assetId, setAssetId] = useState('');
+  const [isChartsVisible, setIsChartsVisible] = useState(false)
+  const axes = ['x-axis', 'y-axis', 'z-axis'];
   const availableIds = ids_assets[assetName] || [];
-  
+
+  const dummyData = { 
+    xAxis: [1,2,3,4,5],
+    yAxis: [6,7,8,9,0], 
+    zAxis: [1,3,5,7,9],
+  }
+
+
   const handleNameChange = (e) => {
     setAssetName(e.target.value)
     setAssetId('')
   }
-  
+
   const handleIdChange = (e) => {
     setAssetId(e.target.value);
   };
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setMessage(assetId)
+    setIsChartsVisible(true)
   }
 
   return (
@@ -54,6 +64,19 @@ export default function MainPage() {
                                            focus:ring-blue-400 focus:ring-opacity-75 mr-4'/>
 
           </form>
+        </div>
+      </div>
+      <div className="flex w-full justify-around">
+        <div className="flex justify-center items-center">
+          charts
+          {isChartsVisible && axes.map((axis) => (
+          <div key={axis} className='mb-5 border-b pb-10 border-gray-300'>
+            <Chart key={axis} cols={axes} vis={axis} data={dummyData}
+             />
+              </div>))}
+        </div>
+        <div>
+          other info
         </div>
       </div>
       <WebSocketProvider message={message} />
