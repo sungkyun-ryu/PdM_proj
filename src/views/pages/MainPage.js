@@ -12,7 +12,7 @@ export default function MainPage() {
   const [assetName, setAssetName] = useState('')
   const [assetId, setAssetId] = useState('');
   const [isChartsVisible, setIsChartsVisible] = useState(false)
-  const axes = ['x-axis', 'y-axis', 'z-axis'];
+  const axes = ['x_axis', 'y_axis', 'z_axis'];
   const availableIds = ids_assets[assetName] || [];
 
   const dummyData = { 
@@ -20,7 +20,6 @@ export default function MainPage() {
     yAxis: [6,7,8,9,0], 
     zAxis: [1,3,5,7,9],
   }
-
 
   const handleNameChange = (e) => {
     setAssetName(e.target.value)
@@ -33,9 +32,11 @@ export default function MainPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setMessage(assetId)
+    setMessage(assetId);
     setIsChartsVisible(true)
   }
+
+  console.log('ischartvis', isChartsVisible )
 
   return (
     <>
@@ -67,15 +68,15 @@ export default function MainPage() {
         </div>
       </div>
       <div className="flex w-full justify-around">
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center font-bold text-5xl">
           charts
           {isChartsVisible && axes.map((axis) => (
           <div key={axis} className='mb-5 border-b pb-10 border-gray-300'>
-            <Chart key={axis} cols={axes} vis={axis} data={dummyData}
+            <Chart key={axis} cols={axes} vis={axis} realtimeData={dummyData}
              />
               </div>))}
         </div>
-        <div>
+        <div className="flex justify-center items-center font-bold text-5xl">
           other info
         </div>
       </div>

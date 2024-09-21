@@ -1,9 +1,15 @@
 import ReactECharts from 'echarts-for-react';
 import { useEffect, useRef, useState } from 'react';
 
-export default function Chart({ cols, vis, sigData, chartClickEvent,  }) {
+export default function Chart({ cols, vis, sigData, chartClickEvent, rowData }) {
 
   const chartRef = useRef(null);
+  // const axes = ['x_axis', 'y_axis', 'z_axis'];
+  // const dummyData = {
+  //   x_axis: [1, 2, 3, 4, 5],
+  //   y_axis: [6, 7, 8, 9, 0],
+  //   z_axis: [1, 3, 5, 7, 9],
+  // }
 
   const [selectedFeatures, setSelectedFeatures] = useState(
     cols.reduce((acc, series) => {
@@ -29,16 +35,17 @@ export default function Chart({ cols, vis, sigData, chartClickEvent,  }) {
   const seriesData = cols.map(feature => ({
     name: feature,
     type: 'line',
-    data: transformData(sigData, feature),
+    data: sigData ? transformData(sigData, feature) : rowData,
     symbol: 'circle',
     symbolSize: 3,
     emphasis: {
       itemStyle: {
         color: '#FF0000',
-      },
+        symbolSize: 50,
+      },     
     },
   }));
-  
+
   const options = {
     title: {
       text: `${vis} chart`,
@@ -83,10 +90,10 @@ export default function Chart({ cols, vis, sigData, chartClickEvent,  }) {
       end: zoomState.end,
     }
   };
-    
+
   useEffect(() => {
     const chartInstance = chartRef.current?.getEchartsInstance();
-    
+
     if (chartInstance) {
       const updateZoomState = () => {
         const currentZoom = chartInstance.getOption().dataZoom[0];
@@ -102,13 +109,13 @@ export default function Chart({ cols, vis, sigData, chartClickEvent,  }) {
 
   useEffect(() => {
     const chartInstance = chartRef.current?.getEchartsInstance();
-    setZoomState({start:0, end:100})
+    setZoomState({ start: 0, end: 100 })
     setSelectedFeatures(cols.reduce((acc, series) => {
       acc[series] = series === vis;
       return acc;
     }, {}))
     if (chartInstance) {
-      chartInstance.on('legendselectchanged', handleLegendClick); 
+      chartInstance.on('legendselectchanged', handleLegendClick);
       chartInstance.on('click', chartClickEvent);
       return () => {
         chartInstance.off('legendselectchanged', handleLegendClick);
@@ -117,6 +124,8 @@ export default function Chart({ cols, vis, sigData, chartClickEvent,  }) {
     }
   }, [sigData]);
 
+  console.log('sigdata', sigData)
+  console.log('seriesdata', seriesData)
 
   return (
     <div>

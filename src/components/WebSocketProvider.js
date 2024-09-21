@@ -12,12 +12,19 @@ export default function WebSocketProvider({ message }) {
     })
     const [isOpen, setIsOpen] = useState(false);
 
+    // const axes = ['x_axis', 'y_axis', 'z_axis'];
+    // const dummyData = { 
+    //     xAxis: [1,2,3,4,5],
+    //     yAxis: [6,7,8,9,0], 
+    //     zAxis: [1,3,5,7,9],
+    //   }
+
  
     useEffect(() => {
         const token = sessionStorage.getItem('Token');
         const userid = sessionStorage.getItem('userid');
         // console.log(token)
-        const ws = new WebSocket(`ws://192.168.0.126:8080/realtimews?auth=${token}`);
+        const ws = new WebSocket(`ws://192.168.0.126:8080/realtimews?userid=${userid}`);
 
         ws.onopen = () => {
             console.log('WebSocket connection established.');
@@ -78,8 +85,8 @@ export default function WebSocketProvider({ message }) {
     return (
         <div>
             <div className="p-20">
-                {/* <Chart vis='X-Axis' />
-                <Chart vis='Y-Axis' />
+                {/* <Chart cols={axes} vis='X-Axis' rowData={dummyData}  /> */}
+                {/* <Chart vis='Y-Axis' />
                 <Chart vis='Z-Axis' /> */}
             </div>
         </div>

@@ -185,6 +185,7 @@ export default function Charts() {
     }
   }, [verticalLines.current])
 
+  console.log('verticallines', verticalLines)
   
   return (
     <div>
