@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 export default function RealtimeChart({ data , axis, colour }) {
 
   const chartRef = useRef(null);
-
+  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
   const [zoomState, setZoomState] = useState({ start: 0, end: 100 });
 
   const transformData = (data) => {
@@ -13,10 +13,13 @@ export default function RealtimeChart({ data , axis, colour }) {
     )
   };
 
+  console.log('data', data)
+
   const seriesData = [{
     name: axis,
     type: 'line',
-    data: transformData(data),
+    data: transformData(data.filter(item => 
+        new Date(item.time).getTime() >= fiveMinutesAgo)),
     symbol: 'circle',
     symbolSize: 3,
     color: colour,
@@ -61,7 +64,7 @@ export default function RealtimeChart({ data , axis, colour }) {
     }
   };
 
-  console.log('chart_data', transformData(data))
+
 
   return (
     <div>

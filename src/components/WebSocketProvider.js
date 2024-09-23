@@ -12,9 +12,6 @@ export default function WebSocketProvider({ message }) {
 })
     const [isOpen, setIsOpen] = useState(false);
 
-    // const axes = ['waveform_x', 'waveform_y', 'waveform_z'];
-
-
     useEffect(() => {
         const token = sessionStorage.getItem('Token');
         const userid = sessionStorage.getItem('userid');
@@ -30,11 +27,7 @@ export default function WebSocketProvider({ message }) {
             try {
                 const realTimeData = JSON.parse(event.data);
                 console.log('Received data:', realTimeData);
-                // setData((prevData) => ([
-                //     {xAxis: [...prevData.xAxis, realTimeData.spectrum_x]},
-                //     {yAxis: [...prevData.yAxis, realTimeData.spectrum_y]},
-                //     {zAxis: [...prevData.zAxis, realTimeData.spectrum_z]},
-                // ]))
+
                 console.log('wave_x', realTimeData.waveform_x)
                 const newData = { 
                     waveform_x : realTimeData.waveform_x, 
@@ -92,12 +85,20 @@ export default function WebSocketProvider({ message }) {
     console.log('datax', data.x)
 
     return (
-        <div>
-            <div className="p-20">           
+            <div className="p-20 w-full"> 
+                {data && (data.x.length > 0 || data.y.length > 0 || data.z.length > 0) ? (     
+                    <>  
+                    {data.x.length > 0 && (
                 <RealtimeChart data = {data.x} axis = 'waveform_x' colour = '#6f63b9'/>
+            )}
+             {data.y.length > 0 && (
                 <RealtimeChart data = {data.y} axis = 'waveform_y' colour = '#ADD8E6'/>
+            )}
+                {data.z.length > 0 && (
                 <RealtimeChart data = {data.z} axis = 'waveform_z' colour = '#aadd80'/>
+            )}
+                </>   
+                ) : null}
             </div>
-        </div>
     )
 }

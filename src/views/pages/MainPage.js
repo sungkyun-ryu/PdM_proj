@@ -24,12 +24,11 @@ export default function MainPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setMessage(assetId);
     setIsChartsVisible(true)
+    setMessage(assetId);
   }
 
-  console.log('ischartvis', isChartsVisible)
-
+console.log(isChartsVisible)
 
   return (
     <>
@@ -61,14 +60,18 @@ export default function MainPage() {
         </div>
       </div>
       <div className="flex w-full ">
-        <div className="w-2/3 flex flex-col justify-center items-center">
-          <span>
+
+        <div className="w-2/3 flex flex-col justify-center items-center pt-10">
+          <span className='font-bold text-3xl border-b-4 border-black'>
             RealTime Waveform Charts
           </span>
-          <WebSocketProvider message={message} />
+          {/* {isChartsVisible && <WebSocketProvider message={message} />} */}
+          <WebSocketProvider message={message}/>
         </div>
-        <div className="flex justify-center items-center font-bold text-5xl">
-          other info
+        <div className="flex justify-center items-center font-bold text-3xl">
+          <span className='font-bold text-3xl border-b-4 border-black'>
+            Other Info
+          </span>
         </div>
       </div>
 
