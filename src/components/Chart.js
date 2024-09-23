@@ -1,22 +1,15 @@
 import ReactECharts from 'echarts-for-react';
 import { useEffect, useRef, useState } from 'react';
 
-export default function Chart({ cols, vis, sigData, chartClickEvent, rowData }) {
+export default function Chart({ cols, vis, sigData, chartClickEvent }) {
 
   const chartRef = useRef(null);
-  // const axes = ['x_axis', 'y_axis', 'z_axis'];
-  // const dummyData = {
-  //   x_axis: [1, 2, 3, 4, 5],
-  //   y_axis: [6, 7, 8, 9, 0],
-  //   z_axis: [1, 3, 5, 7, 9],
-  // }
 
-  const [selectedFeatures, setSelectedFeatures] = useState(
-    cols.reduce((acc, series) => {
+  const [selectedFeatures, setSelectedFeatures] = useState(cols.reduce((acc, series) => {
       acc[series] = series === vis;
       return acc;
-    }, {})
-  );
+    }, {}));
+
   const [zoomState, setZoomState] = useState({ start: 0, end: 100 });
 
   const transformData = (sigData, feature) => {
@@ -35,16 +28,16 @@ export default function Chart({ cols, vis, sigData, chartClickEvent, rowData }) 
   const seriesData = cols.map(feature => ({
     name: feature,
     type: 'line',
-    data: sigData ? transformData(sigData, feature) : rowData,
+    data: transformData(sigData, feature),
     symbol: 'circle',
     symbolSize: 3,
     emphasis: {
       itemStyle: {
         color: '#FF0000',
         symbolSize: 50,
-      },     
+      },
     },
-  }));
+  })) 
 
   const options = {
     title: {
@@ -55,13 +48,13 @@ export default function Chart({ cols, vis, sigData, chartClickEvent, rowData }) 
     tooltip: {
       trigger: 'axis',
     },
-    legend: {
+    legend: sigData ? {
       data: cols,
       selected: selectedFeatures,
       top: '5%',
       left: 'center',
       bottom: '0%',
-    },
+    } : undefined,
     grid: {
       left: '15%',
       right: '10%',

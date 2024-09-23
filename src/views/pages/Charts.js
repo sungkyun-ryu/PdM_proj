@@ -77,8 +77,8 @@ export default function Charts() {
     }
 
     await PostDataFetch({
-      "asset_name": asset,
-      // "asset_id" : assetId,
+      // "asset_name": assetName,
+      "asset_id" : assetId,
       "start_at": sUnixTime,
       "end_at": eUnixTime,
       "cols": checkboxesRef.current,
@@ -148,6 +148,7 @@ export default function Charts() {
       "asset_id" : assetId,
       "start_at" : verticalLines[0],
       "end_at" : verticalLines[1],
+      
     } , 'http://192.168.0.126:8080/savebookmark')
     verticalLines.current = []
     setModalOpen(false);
@@ -185,7 +186,7 @@ export default function Charts() {
     }
   }, [verticalLines.current])
 
-  console.log('verticallines', verticalLines)
+  console.log('verticallines', verticalLines.current)
   
   return (
     <div>
@@ -255,14 +256,14 @@ export default function Charts() {
         </div>
         {/* {!isTableVisible && !isChartsVisible && <p>No data to display. Please make a selection and submit.</p>} */}
         {isTableVisible && <Table rows={tableRows} columns={columns} text='mb-20'/>}
-        {isChartsVisible && checkboxesRef.current.map((item) => (
+        {isChartsVisible && checkboxesRef.current.slice(0, 5).map((item) => (
           <div key={item} className='mb-5 border-b pb-10 border-gray-300'>
             <Chart key={item} cols={checkboxesRef.current} vis={item} sigData={tableRows}
               chartClickEvent={handleChartClick} />
             <Modal isOpen={modalOpen} onClose={handleClose} onConfirm={handleConfirm}
               text={<>
                 Do you want to bookmark the data between <br />
-                {new Date(verticalLines[0]).toLocaleString()} and {new Date(verticalLines[1]).toLocaleString()}?
+                {new Date(verticalLines.current[0]).toLocaleString()} and {new Date(verticalLines.current[1]).toLocaleString()}?
               </>} />
             <Toast message={toastMessage} show={showToast} onClose={() => setShowToast(false)} />
           </div>

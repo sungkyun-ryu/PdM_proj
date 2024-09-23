@@ -1,30 +1,24 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import Chart from './Chart';
+import RealtimeChart from './RealtimeChart';
 
 
 export default function WebSocketProvider({ message }) {
     const [socket, setSocket] = useState(null);
     const [data, setData] = useState({
-        xAxis: [],
-        yAxis: [],
-        zAxis: [],
-    })
+        x : [],
+        y : [],
+        z : [],
+})
     const [isOpen, setIsOpen] = useState(false);
 
-    // const axes = ['x_axis', 'y_axis', 'z_axis'];
-    // const dummyData = { 
-    //     xAxis: [1,2,3,4,5],
-    //     yAxis: [6,7,8,9,0], 
-    //     zAxis: [1,3,5,7,9],
-    //   }
+    // const axes = ['waveform_x', 'waveform_y', 'waveform_z'];
 
- 
+
     useEffect(() => {
         const token = sessionStorage.getItem('Token');
         const userid = sessionStorage.getItem('userid');
-        // console.log(token)
-        const ws = new WebSocket(`ws://192.168.0.126:8080/realtimews?userid=${userid}`);
+        const ws = new WebSocket(`ws://192.168.0.126:8080/realtimews?auth=${userid}`);
 
         ws.onopen = () => {
             console.log('WebSocket connection established.');
@@ -36,12 +30,26 @@ export default function WebSocketProvider({ message }) {
             try {
                 const realTimeData = JSON.parse(event.data);
                 console.log('Received data:', realTimeData);
-                setData((prevData) => ({
-                    xAxis: [...prevData.xAxis, realTimeData.spectrum_x],
-                    yAxis: [...prevData.yAxis, realTimeData.spectrum_y],
-                    zAxis: [...prevData.zAxis, realTimeData.spectrum_z],
+                // setData((prevData) => ([
+                //     {xAxis: [...prevData.xAxis, realTimeData.spectrum_x]},
+                //     {yAxis: [...prevData.yAxis, realTimeData.spectrum_y]},
+                //     {zAxis: [...prevData.zAxis, realTimeData.spectrum_z]},
+                // ]))
+                console.log('wave_x', realTimeData.waveform_x)
+                const newData = { 
+                    waveform_x : realTimeData.waveform_x, 
+                    waveform_y : realTimeData.waveform_y, 
+                    waveform_z : realTimeData.waveform_z,
+                }
 
-                }))
+                const nowTime = new Date().toISOString();
+
+                setData((prevData) => ({
+                    x: [...prevData.x, { time: nowTime, value: newData.waveform_x }],
+                    y: [...prevData.y, { time: nowTime, value: newData.waveform_y }],
+                    z: [...prevData.z, { time: nowTime, value: newData.waveform_z }],
+                }));
+
             } catch (error) {
                 console.error('WebSocket error:', error);
                 console.error('Error message:', error.message);
@@ -81,13 +89,14 @@ export default function WebSocketProvider({ message }) {
     }, [message, socket, isOpen])
 
     console.log('message', message)
+    console.log('datax', data.x)
 
     return (
         <div>
-            <div className="p-20">
-                {/* <Chart cols={axes} vis='X-Axis' rowData={dummyData}  /> */}
-                {/* <Chart vis='Y-Axis' />
-                <Chart vis='Z-Axis' /> */}
+            <div className="p-20">           
+                <RealtimeChart data = {data.x} axis = 'waveform_x' colour = '#6f63b9'/>
+                <RealtimeChart data = {data.y} axis = 'waveform_y' colour = '#ADD8E6'/>
+                <RealtimeChart data = {data.z} axis = 'waveform_z' colour = '#aadd80'/>
             </div>
         </div>
     )

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const PostDataFetch = async (params, url, method) => {
+const PostDataFetch = async (params, url) => {
   try {
     const token = sessionStorage.getItem('Token');   
     const response = await axios.post(url, params

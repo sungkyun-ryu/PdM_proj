@@ -1,5 +1,4 @@
 import Nav from "../layouts/Nav";
-import Chart from "../../components/Chart";
 import Button from "../../components/Button";
 import Selection from "../../components/Selection";
 import { useState, useRef, useEffect } from "react";
@@ -12,14 +11,7 @@ export default function MainPage() {
   const [assetName, setAssetName] = useState('')
   const [assetId, setAssetId] = useState('');
   const [isChartsVisible, setIsChartsVisible] = useState(false)
-  const axes = ['x_axis', 'y_axis', 'z_axis'];
   const availableIds = ids_assets[assetName] || [];
-
-  const dummyData = { 
-    xAxis: [1,2,3,4,5],
-    yAxis: [6,7,8,9,0], 
-    zAxis: [1,3,5,7,9],
-  }
 
   const handleNameChange = (e) => {
     setAssetName(e.target.value)
@@ -36,7 +28,8 @@ export default function MainPage() {
     setIsChartsVisible(true)
   }
 
-  console.log('ischartvis', isChartsVisible )
+  console.log('ischartvis', isChartsVisible)
+
 
   return (
     <>
@@ -67,20 +60,18 @@ export default function MainPage() {
           </form>
         </div>
       </div>
-      <div className="flex w-full justify-around">
-        <div className="flex justify-center items-center font-bold text-5xl">
-          charts
-          {isChartsVisible && axes.map((axis) => (
-          <div key={axis} className='mb-5 border-b pb-10 border-gray-300'>
-            <Chart key={axis} cols={axes} vis={axis} realtimeData={dummyData}
-             />
-              </div>))}
+      <div className="flex w-full ">
+        <div className="w-2/3 flex flex-col justify-center items-center">
+          <span>
+            RealTime Waveform Charts
+          </span>
+          <WebSocketProvider message={message} />
         </div>
         <div className="flex justify-center items-center font-bold text-5xl">
           other info
         </div>
       </div>
-      <WebSocketProvider message={message} />
+
     </>
   )
 }
