@@ -14,6 +14,7 @@ export default function Bookmark() {
     const [bookmarkRows, setBookmarkRows] = useState([]);
     const [isBookmarkTableVisible, setIsBookmarkTableVisible] = useState(false);
     const userid = sessionStorage.getItem('userid')
+    // const [multiCheck, setMultiCheck] = useState(false)
 
     const loadBookmark = async () => {
         const token = sessionStorage.getItem('Token')
@@ -49,22 +50,31 @@ export default function Bookmark() {
         loadBookmark(); 
     },[]);
 
+    // const deleteBookmark = () => {
+    //     setMultiCheck(prev => !prev)
+    // }
     return (
         <div>
             <header className='bg-black p-3'>
                 <Nav />
             </header>
             <div className='px-10 pb-24'>
-                <div className='py-10'>
-                    {/* <Button type='submit' name='Load' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
-                                           hover:bg-blue-600 focus:outline-none focus:ring-2
-                                           focus:ring-blue-400 focus:ring-opacity-75'
-                                           func = {loadBookmark}/> */}
-                </div>
-                <div className='flex justify-center mb-10 '>
+                
+                <div className='flex justify-center mb-10 py-10 '>
                 <span className='font bold text-5xl p-3 border-b-4 w-auto border-b-slate-600'>{userid}'s BookMark</span>
                 </div>
-                {isBookmarkTableVisible && <BookmarkTable columns={bookmarkColumns} rows={bookmarkRows} text='mb-20' />}
+                <div className='pb-4'>
+                    <Button type='submit' name='Delete' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
+                                           hover:bg-blue-600 focus:outline-none focus:ring-2
+                                           focus:ring-blue-400 focus:ring-opacity-75'
+                                        //    func = {deleteBookmark}
+                                           />
+                </div>
+                {isBookmarkTableVisible && <BookmarkTable columns={bookmarkColumns} 
+                                                            rows={bookmarkRows}
+                                                            text='mb-20' 
+                                                            // multiCheck={multiCheck} 
+                                                            />}
             </div>
         </div>
     )

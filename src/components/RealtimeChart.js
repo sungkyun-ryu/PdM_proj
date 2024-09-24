@@ -10,12 +10,13 @@ export default function RealtimeChart({ data , axis, colour }) {
   const [zoomState, setZoomState] = useState({ start: 0, end: 100 });
 
   const transformData = (data) => {
+
     return data.map(item =>
       [item.time, item.value],
     )
   };
 
-  console.log('data', data)
+
 
   const seriesData = [{
     name: axis,
@@ -23,18 +24,11 @@ export default function RealtimeChart({ data , axis, colour }) {
     data: transformData(data.filter(item => 
         new Date(item.time).getTime() >= fiveMinutesAgo)),
         // new Date(item.time).getTime() >= threeSecondsAgo)),
-    symbol: 'circle',
-    symbolSize: 3,
+    symbol: 'none',
     color: colour,
-    emphasis: {
-      itemStyle: {
-        color: '#FF0000',
-        symbolSize: 50,
-      },
-    },
+
 }]
  
-
   const options = {
     title: {
       text: `${axis} chart`,
@@ -52,6 +46,11 @@ export default function RealtimeChart({ data , axis, colour }) {
     },
     xAxis: {
       type: 'time',
+      axisLabel: {
+        show: false},
+      axisTick: {
+        show: false,
+    },
     },
     yAxis: {
       type: 'value',
@@ -67,6 +66,21 @@ export default function RealtimeChart({ data , axis, colour }) {
     }
   };
 
+  useEffect(() => {
+    const chartInstance = chartRef.current?.getEchartsInstance();
+
+    if (chartInstance) {
+      const updateZoomState = () => {
+        const currentZoom = chartInstance.getOption().dataZoom[0];
+        setZoomState({ start: currentZoom.start, end: currentZoom.end })
+      }
+      chartInstance.on('dataZoom', updateZoomState);
+
+      return () => {
+        chartInstance.off('dataZoom', updateZoomState);
+      };
+    }
+  }, [zoomState]);
 
 
   return (

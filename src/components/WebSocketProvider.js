@@ -26,9 +26,9 @@ export default function WebSocketProvider({ message }) {
 
             try {
                 const realTimeData = JSON.parse(event.data);
-                console.log('Received data:', realTimeData);
+                // console.log('Received data:', realTimeData);
 
-                console.log('wave_x', realTimeData.waveform_x)
+                // console.log('wave_x', realTimeData.waveform_x)
                 const newData = { 
                     waveform_x : realTimeData.waveform_x, 
                     waveform_y : realTimeData.waveform_y, 

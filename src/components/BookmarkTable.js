@@ -5,7 +5,7 @@ import { PostDataFetch } from '../functions/DataFetching';
 import { useNavigate } from 'react-router-dom';
 
 
-export default function BookmarkTable({ rows, columns, text, }) {
+export default function BookmarkTable({ rows, columns, text, multiCheck, buttonfunc }) {
     const [selectedRow, setSelectedRow] = useState(null);
     const navigate = useNavigate()
 
@@ -48,9 +48,10 @@ export default function BookmarkTable({ rows, columns, text, }) {
                     columns={columns}
                     // initialState={{ pagination: { paginationModel } }}
                     pageSizeOptions={[5, 10]}
-                    // checkboxSelection
+                    checkboxSelection={multiCheck}
                     selectionModel={selectedRow}
                     onRowSelectionModelChange={handleRowSelection}
+                    // onRowClick={handleRowSelection}
                     sx={{
                         border: 0,
                         '& .MuiDataGrid-columnHeaders': {
