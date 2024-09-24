@@ -3,14 +3,15 @@ import Selection from "../../components/Selection";
 import Nav from "../layouts/Nav";
 import Button from "../../components/Button";
 import Table from "../../components/Table";
-import { PostDataFetch, RowDataFetch } from "../../functions/DataFetching";
+import { PostDataFetch } from "../../functions/DataFetching";
 import { generateUniqueId, addingUniqueId } from "../../functions/ProduceRows";
 import { useState, useEffect, useRef } from "react";
 import CheckBx from "../../components/CheckBx";
-import ProduceCols from "../../functions/ProduceCols";
+import { ProduceCols } from "../../functions/ProduceCols";
 import { asset_names, col_names, ids_assets } from "../../components/Assets";
 import Modal from "../../components/Modal";
 import Toast from "../../components/Toast";
+import { useLocation } from "react-router-dom";
 
 export default function Charts() {
 
@@ -31,92 +32,108 @@ export default function Charts() {
   const [columns, setColumns] = useState([])
 
   const verticalLines = useRef([]);
+  const commentRef = useRef('');
   const [modalOpen, setModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const availableIds = ids_assets[asset] || [];
+  const location = useLocation();
+  const { bookmarkParams } = location.state || {};
+
+  console.log('columns', columns)
+
+  const eUnixTime = () => {
+    if (eDate.current && eTime.current) {
+      const eDateTimeString = `${eDate.current}T${eTime.current}`;
+      const eDateTime = new Date(eDateTimeString);
+      if (!isNaN(eDateTime.getTime())) {
+        return Math.floor(eDateTime.getTime() / 1000);
+      } else {
+        console.error("Invalid date/time string:", eDateTimeString);
+        return null;
+      }
+      return null;
+    }
+  }
+
+  const sUnixTime = () => {
+    if (sDate.current && sTime.current) {
+      const sDateTimeString = `${sDate.current}T${sTime.current}`;
+      const sDateTime = new Date(sDateTimeString);
+      if (!isNaN(sDateTime.getTime())) {
+        return Math.floor(sDateTime.getTime() / 1000);
+      } else {
+        console.error("Invalid date/time string:", sDateTimeString);
+        return null
+      }
+    }
+    else {
+      return eUnixTime() - (7 * 24 * 60 * 60);
+    }
+  };
+
+  const fetchChartData = async (params) => {
+    try {
+      const result = await PostDataFetch(params, 'http://192.168.0.126:8080/charts')
+
+        .then(result => {
+          const uniqueData = addingUniqueId(result);
+
+          setTableRows(uniqueData);
+          setColumns(ProduceCols(checkboxesRef.current));
+
+          if (uniqueData.length > 0) {
+            setIsTableVisible(true);
+            setIsChartsVisible(true);
+            setShowCheckboxes(false);
+          } else {
+            setIsTableVisible(false);
+            setIsChartsVisible(false);
+            setShowCheckboxes(true);
+            alert('No data available');
+          }
+
+          return uniqueData;
+        })
+        .then(() => generateUniqueId.reset())
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    } catch (error) {
+      console.error('Error fetching chart data:', error);
+      alert('Failed to fetch data.');
+    }
+  };
+
 
   const handleSubmit = async (e) => {
 
     e.preventDefault();
 
     setShowCheckboxes(false);
-        
+
     if (asset === '') {
       alert('Please Select Asset Name')
     }
-    
-    if (asset !== '' && assetId === '') {alert('Please Select Asset Id')}
-    
+
+    if (asset !== '' && assetId === '') { alert('Please Select Asset Id') }
+
     if (checkboxesRef.current.length === 0) {
       alert('Please select at least one checkbox.');
       setShowCheckboxes(true);
-      return;    }
-
-    let eUnixTime;
-    let sUnixTime;
-
-    if (eDate.current && eTime.current) {
-      const eDateTimeString = `${eDate.current}T${eTime.current}`;
-      const eDateTime = new Date(eDateTimeString);
-      eUnixTime = Math.floor(eDateTime.getTime() / 1000);
+      return;
     }
-
-    if (sDate.current && sTime.current) {
-      const sDateTimeString = `${sDate.current}T${sTime.current}`;
-      const sDateTime = new Date(sDateTimeString);
-      sUnixTime = Math.floor(sDateTime.getTime() / 1000);
-    } else if (sDate.current) {
-      sTime.current = '00:00'
-      const sDateTimeString = `${sDate.current}T${sTime.current}`;
-      const sDateTime = new Date(sDateTimeString);
-      sUnixTime = Math.floor(sDateTime.getTime() / 1000);
-    }
-    else {
-      sUnixTime = eUnixTime - (7 * 24 * 60 * 60);
-    }
-
-    await PostDataFetch({
-      // "asset_name": assetName,
-      "asset_id" : assetId,
-      "start_at": sUnixTime,
-      "end_at": eUnixTime,
-      "cols": checkboxesRef.current,
-    }, 'http://192.168.0.126:8080/charts')
-      // .then(result => addingUniqueId(result))
-      // .then(result => setTableRows(result))
-      // .then(()=>setColumns(ProduceCols(checkboxesRef.current)))
-      // .then(() => setIsTableVisible(true))
-      // .then(() => setIsChartsVisible(true))
-      // .then(generateUniqueId.reset())
-
-      .then(result => {
-        const uniqueData = addingUniqueId(result);
-        setTableRows(uniqueData);
-        setColumns(ProduceCols(checkboxesRef.current));
     
-        if (uniqueData.length > 0) {
-          setIsTableVisible(true);
-          setIsChartsVisible(true);
-          setShowCheckboxes(false);
-        } else {
-          setIsTableVisible(false);
-          setIsChartsVisible(false);
-          setShowCheckboxes(true);
-          alert('No data available'); 
-        }
+    const params = {
+        "asset_id" : assetId,
+        "start_at": sUnixTime(),
+        "end_at": eUnixTime(),
+        "cols": checkboxesRef.current,
+      }
 
-        return uniqueData; 
-      })
-      .then(() => generateUniqueId.reset())
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        // Handle errors here if needed
-      });
+    fetchChartData(params)
 
-
-      verticalLines.current = [];
-
+    verticalLines.current = [];
   }
 
   const handleSelectionChange = (e) => {
@@ -130,9 +147,8 @@ export default function Charts() {
   const handleChartClick = (params) => {
     if (params && params.componentType === 'series' && params.seriesType === 'line') {
       const xValue = params.data[0];
-  
-      if (verticalLines.current.length === 1)
-      {
+
+      if (verticalLines.current.length === 1) {
         verticalLines.current = [...verticalLines.current, xValue];
         setModalOpen(true);
       } else {
@@ -144,13 +160,18 @@ export default function Charts() {
   };
 
   const handleConfirm = () => {
-    PostDataFetch({
-      "asset_id" : assetId,
-      "start_at" : verticalLines[0],
-      "end_at" : verticalLines[1],
-      
-    } , 'http://192.168.0.126:8080/savebookmark')
-    verticalLines.current = []
+
+    const params = {
+      "asset_id": assetId,
+      "start_at": verticalLines.current[0] / 1000,
+      "end_at": verticalLines.current[1] / 1000,
+      "cols": checkboxesRef.current,
+      "bookmark_name": commentRef.current,
+    }
+
+    PostDataFetch(params, 'http://192.168.0.126:8080/charts/savebookmark')
+    verticalLines.current = [];
+    commentRef.current = '';
     setModalOpen(false);
   };
 
@@ -158,6 +179,12 @@ export default function Charts() {
     verticalLines.current = []
     setModalOpen(false);
   };
+
+  const bookmarkAll = () => {
+    verticalLines.current[0] = sUnixTime() * 1000
+    verticalLines.current[1] = eUnixTime() * 1000
+    setModalOpen(true);
+  }
 
   useEffect(() => {
     const now = new Date();
@@ -174,7 +201,7 @@ export default function Charts() {
 
   useEffect(() => {
   }, [verticalLines]);
-  
+
   useEffect(() => {
     if (verticalLines.current.length > 1) { setModalOpen(true) }
   }, [verticalLines.current])
@@ -186,8 +213,18 @@ export default function Charts() {
     }
   }, [verticalLines.current])
 
+  useEffect(() => {
+    if (bookmarkParams) {
+      checkboxesRef.current = bookmarkParams.cols
+      console.log('Received parameters:', bookmarkParams);
+      fetchChartData(bookmarkParams); 
+    }
+  }, [bookmarkParams]);
+
   console.log('verticallines', verticalLines.current)
-  
+
+
+
   return (
     <div>
       <header className='bg-black p-3'>
@@ -208,7 +245,7 @@ export default function Charts() {
                   <Selection choices={availableIds} text={'font-normal text-lg'}
                     func={handleIdChange} d_value={'Select Asset Id'}
                     selectedValue={assetId}
-                    />
+                  />
                 </label>
               </div>
 
@@ -255,7 +292,12 @@ export default function Charts() {
           />
         </div>
         {/* {!isTableVisible && !isChartsVisible && <p>No data to display. Please make a selection and submit.</p>} */}
-        {isTableVisible && <Table rows={tableRows} columns={columns} text='mb-20'/>}
+        {isTableVisible && <Table rows={tableRows} columns={columns} text='mb-20' />}
+        {isChartsVisible && <Button type='submit' name='Bookmark All' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
+                                           hover:bg-blue-600 focus:outline-none focus:ring-2
+                                           focus:ring-blue-400 focus:ring-opacity-75'
+          func={bookmarkAll} />
+        }
         {isChartsVisible && checkboxesRef.current.slice(0, 5).map((item) => (
           <div key={item} className='mb-5 border-b pb-10 border-gray-300'>
             <Chart key={item} cols={checkboxesRef.current} vis={item} sigData={tableRows}
@@ -264,7 +306,8 @@ export default function Charts() {
               text={<>
                 Do you want to bookmark the data between <br />
                 {new Date(verticalLines.current[0]).toLocaleString()} and {new Date(verticalLines.current[1]).toLocaleString()}?
-              </>} />
+              </>}
+              ref={commentRef} />
             <Toast message={toastMessage} show={showToast} onClose={() => setShowToast(false)} />
           </div>
         ))}

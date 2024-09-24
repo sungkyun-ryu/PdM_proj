@@ -23,7 +23,7 @@ export default function Nav() {
                     <a href='/charts' className= 'mr-10 text-2xl text-white'>
                         Charts 
                     </a>
-                    <a href='#' className= 'mr-10 text-2xl text-white'>
+                    <a href='/bookmark' className= 'mr-10 text-2xl text-white'>
                         Bookmark 
                     </a>               
                     <a href='#' className= 'mr-10 text-2xl text-white'>

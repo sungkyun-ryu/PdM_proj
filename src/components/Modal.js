@@ -1,8 +1,19 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, forwardRef, useEffect } from 'react';
 
-const Modal = ({ isOpen, onClose, onConfirm, text }) => {
+const Modal = forwardRef(({ isOpen, onClose, onConfirm, text }, ref) => {
   const [comment, setComment] = useState('')
+
+  useEffect(() => {    
+    if(ref) {
+    console.log('Updating ref:', ref);
+    ref.current = comment;}  
+  }, [comment, ref]);
+
+  console.log('commentref', ref);
+  console.log('comment', comment)
+
+ 
   if (!isOpen) return null;
 
   return (
@@ -34,6 +45,6 @@ const Modal = ({ isOpen, onClose, onConfirm, text }) => {
       </div>
     </div>
   );
-};
+});
 
 export default Modal;

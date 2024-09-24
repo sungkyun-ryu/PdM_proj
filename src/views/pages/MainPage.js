@@ -28,7 +28,7 @@ export default function MainPage() {
     setMessage(assetId);
   }
 
-console.log(isChartsVisible)
+  console.log(isChartsVisible)
 
   return (
     <>
@@ -45,9 +45,15 @@ console.log(isChartsVisible)
                 />
               </label>
 
-              <label className="flex text-xl font-bold items-center" > <span>Asset ID :</span> &nbsp;
+              <label className="flex text-xl font-bold py-3 pr-8 items-center" > <span>Asset ID :</span> &nbsp;
                 <Selection choices={availableIds} text={'font-normal text-lg'}
                   func={handleIdChange} d_value={'Please Select Asset Id'}
+                  selectedValue={assetId} />
+              </label>
+
+              <label className="flex text-xl font-bold items-center" > <span>Chart Style :</span> &nbsp;
+                <Selection choices={['DYNAMIC', 'STATIC']} text={'font-normal text-lg'}
+                  func={handleIdChange} d_value={'Chart Style'}
                   selectedValue={assetId} />
               </label>
             </div>
@@ -66,12 +72,19 @@ console.log(isChartsVisible)
             RealTime Waveform Charts
           </span>
           {/* {isChartsVisible && <WebSocketProvider message={message} />} */}
-          <WebSocketProvider message={message}/>
+          <WebSocketProvider message={message} />
         </div>
-        <div className="flex justify-center items-center font-bold text-3xl">
-          <span className='font-bold text-3xl border-b-4 border-black'>
-            Other Info
-          </span>
+        <div>
+          <div className='h-full pt-10'>
+            <span className='font-bold text-3xl border-b-4 border-black h-1/2'>
+              Temperature
+            </span>
+          </div>
+          <div>
+            <span className='font-bold text-3xl border-b-4 border-black h-1/2'>
+              Voltage
+            </span>
+          </div>
         </div>
       </div>
 

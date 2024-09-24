@@ -25,7 +25,8 @@ export default function Table({ rows, columns, text,
     //     const selectedRowData = getSelectedRowData();
     //     onRowSelect(selectedRowData);
     // }, [selectedRow, rows, onRowSelect]);
-
+    console.log('tablecolumns', columns)
+    console.log('tablerows', rows)
     return (
         <div>
             <Paper sx={{
