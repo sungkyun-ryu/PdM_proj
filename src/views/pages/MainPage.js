@@ -4,6 +4,7 @@ import Selection from "../../components/Selection";
 import { useState, useRef, useEffect } from "react";
 import WebSocketProvider from "../../components/WebSocketProvider";
 import { asset_names, ids_assets } from "../../components/Assets";
+import { PostDataFetch } from "../../functions/DataFetching";
 
 export default function MainPage() {
 
@@ -11,6 +12,7 @@ export default function MainPage() {
   const [assetName, setAssetName] = useState('')
   const [assetId, setAssetId] = useState('');
   const [isChartsVisible, setIsChartsVisible] = useState(false)
+  const [chartStyle, setChartStyle] = useState('')
   const availableIds = ids_assets[assetName] || [];
 
   const handleNameChange = (e) => {
@@ -22,13 +24,27 @@ export default function MainPage() {
     setAssetId(e.target.value);
   };
 
+  const handleStyleChange = (e) => {
+    setChartStyle(e.target.value)
+    console.log(chartStyle)
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsChartsVisible(true)
-    setMessage(assetId);
+    const param= {'asset_id' : assetId}
+    if (chartStyle === 'DYNAMIC') {setMessage(assetId);} 
+    else {       
+      PostDataFetch(param, 'http://192.168.0.126:8080/waveform' )
+      .then(result => console.log(result))
+    }        
+    PostDataFetch(param, 'http://192.168.0.126:8080/tempvolt')
+    .then(result => console.log(result))
   }
 
-  console.log(isChartsVisible)
+
+  // console.log(isChartsVisible)
+  console.log('메시지', message)
 
   return (
     <>
@@ -47,14 +63,13 @@ export default function MainPage() {
 
               <label className="flex text-xl font-bold py-3 pr-8 items-center" > <span>Asset ID :</span> &nbsp;
                 <Selection choices={availableIds} text={'font-normal text-lg'}
-                  func={handleIdChange} d_value={'Please Select Asset Id'}
+                  func={handleIdChange} d_value={'Please Select Asset Id '}
                   selectedValue={assetId} />
               </label>
 
               <label className="flex text-xl font-bold items-center" > <span>Chart Style :</span> &nbsp;
                 <Selection choices={['DYNAMIC', 'STATIC']} text={'font-normal text-lg'}
-                  func={handleIdChange} d_value={'Chart Style'}
-                  selectedValue={assetId} />
+                  func={handleStyleChange} d_value={'Chart Style '} />
               </label>
             </div>
 
@@ -72,6 +87,7 @@ export default function MainPage() {
             RealTime Waveform Charts
           </span>
           {/* {isChartsVisible && <WebSocketProvider message={message} />} */}
+          {/* {message && <WebSocketProvider message={message} />} */}
           <WebSocketProvider message={message} />
         </div>
         <div>

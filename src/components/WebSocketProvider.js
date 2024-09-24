@@ -81,8 +81,8 @@ export default function WebSocketProvider({ message }) {
         }
     }, [message, socket, isOpen])
 
-    console.log('message', message)
-    console.log('datax', data.x)
+    // console.log('message', message)
+    // console.log('datax', data.x)
 
     return (
             <div className="p-20 w-full"> 

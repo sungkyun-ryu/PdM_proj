@@ -1,6 +1,10 @@
 import axios from "axios";
+import Nav from "../layouts/Nav";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function LoginPage() {
+    const navigate = useNavigate();     
 
     const handleLogin = async (e) => {
 
@@ -16,7 +20,7 @@ export default function LoginPage() {
                 'http://192.168.0.126:8080/login',
                 credential
             );
-            
+
             if (response.status === 200) {
                 const token = response.headers['authorization'];
                 // token = token.substring(7)
@@ -32,9 +36,23 @@ export default function LoginPage() {
         }
     }
 
+    useEffect(() => {
+        const token = sessionStorage.getItem('Token');
+        const userid = sessionStorage.getItem('userid');
+        
+        if (token && userid) {
+            navigate('/home'); // Redirect to /home if token and userid exist
+        }
+    }, []);
+
     return (
+        <div>
+        <header className='bg-black p-3'>
+            <Nav />
+        </header>
+        <div className="py-40 flex justify-center items-center">
         <div className="w-1/4 min-w-96 py-6 min-h-96 rounded-lg bg-white/[.55] shadow-lg flex flex-col justify-center items-center">
-            <p className="text-[#2b50bd] text-3xl font-bold w-full px-8">
+            <p className="flex justify-center text-3xl font-bold w-full px-8">
                 Login
             </p>
             <form
@@ -77,11 +95,13 @@ export default function LoginPage() {
                 <div className="py-1"></div>
                 <button
                     type="submit"
-                    className="w-full text-white bg-[#343077] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                    className="w-full text-white bg-black hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                 >
-                    로그인
+                    Log In
                 </button>
             </form>
         </div>
+        </div>
+        </div>       
     )
 }
