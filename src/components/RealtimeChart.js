@@ -8,27 +8,30 @@ export default function RealtimeChart({ data , axis, colour }) {
   const oneMinutesAgo = Date.now() - 1 * 60 * 1000;
   const threeSecondsAgo = Date.now() - 3 * 1000;
   const [zoomState, setZoomState] = useState({ start: 0, end: 100 });
+  // const [seriesData, setSeriesData] = useState([]);
 
   const transformData = (data) => {
-
     return data.map(item =>
       [item.time, item.value],
     )
   };
 
-
-
+  // const transformStaticData = (staticData) => {
+  //   return staticData.map((value, index) => [index, value]); 
+  // };
+ 
   const seriesData = [{
     name: axis,
     type: 'line',
     data: transformData(data.filter(item => 
-        new Date(item.time).getTime() >= fiveMinutesAgo)),
-        // new Date(item.time).getTime() >= threeSecondsAgo)),
-    symbol: 'none',
-    color: colour,
+      new Date(item.time).getTime() >= fiveMinutesAgo)),
+      // new Date(item.time).getTime() >= threeSecondsAgo)),
+      symbol: 'none',
+      color: colour,
+    }]
+    
 
-}]
- 
+
   const options = {
     title: {
       text: `${axis} chart`,
@@ -55,9 +58,7 @@ export default function RealtimeChart({ data , axis, colour }) {
     yAxis: {
       type: 'value',
     },
-    series: [
-      ...seriesData,
-    ],
+    series: [...seriesData],
     dataZoom:
     {
       type: 'inside',
@@ -65,6 +66,10 @@ export default function RealtimeChart({ data , axis, colour }) {
       end: zoomState.end,
     }
   };
+
+  // console.log('options', options.series)
+  // console.log('seriesData', seriesData[0].data)
+  // console.log('data', data)
 
   useEffect(() => {
     const chartInstance = chartRef.current?.getEchartsInstance();
@@ -82,6 +87,72 @@ export default function RealtimeChart({ data , axis, colour }) {
     }
   }, [zoomState]);
 
+  // useEffect(() => {
+  //   if (staticData) {
+  //     const transformedStaticData = transformStaticData(staticData);
+  //   }
+  // }, [staticData]);
+
+  // useEffect(() => {
+  //   if (data && data.length > 0) {
+  //     const transformedData = transformData(data.filter(item => 
+  //       new Date(item.time).getTime() >= fiveMinutesAgo
+  //     ));
+  //     setSeriesData([{
+  //       name: axis,
+  //       type: 'line',
+  //       data: transformedData,
+  //       symbol: 'none',
+  //       color: colour,
+  //     }]);
+  //   } else if (staticData.length > 0) {
+  //     const transformedStaticData = transformStaticData(staticData);
+  //     setSeriesData([{
+  //       name: axis,
+  //       type: 'line',
+  //       data: transformedStaticData,
+  //       symbol: 'none',
+  //       color: colour,
+  //     }]);
+  //   }
+  // }, [data, staticData, axis, colour]);
+
+  // useEffect(()=> {
+  //   const options = {
+  //     title: {
+  //       text: `${axis} chart`,
+  //       top: 'center',
+  //       left: '0%'
+  //     },
+  //     tooltip: {
+  //       trigger: 'axis',
+  //     },
+  //     grid: {
+  //       left: '20%',
+  //       right: '10%',
+  //       bottom: '10%',
+  //       top: '30%'
+  //     },
+  //     xAxis: {
+  //       type: 'time',
+  //       axisLabel: {
+  //         show: false},
+  //       axisTick: {
+  //         show: false,
+  //     },
+  //     },
+  //     yAxis: {
+  //       type: 'value',
+  //     },
+  //     series: seriesData,
+  //     dataZoom:
+  //     {
+  //       type: 'inside',
+  //       start: zoomState.start,
+  //       end: zoomState.end,
+  //     }
+  //   };
+  // }, [seriesData, axis, zoomState])
 
   return (
     <div>

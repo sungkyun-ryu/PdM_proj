@@ -6,19 +6,23 @@ import { useState, useRef, useEffect } from "react";
 import WebSocketProvider from "../../components/WebSocketProvider";
 import { asset_names, ids_assets } from "../../components/Assets";
 import { PostDataFetch } from "../../functions/DataFetching";
+import RealtimeChart from "../../components/RealtimeChart";
+import WebSocketStatic from "../../components/WebSocketStatic";
+import Charts from "./Charts";
 
 export default function MainPage() {
 
   const [message, setMessage] = useState('');
+  const [staticMessage, setStaticMessage] = useState('');
   const [assetName, setAssetName] = useState('')
   const [assetId, setAssetId] = useState('');
   const [isChartsVisible, setIsChartsVisible] = useState(false)
   const [chartStyle, setChartStyle] = useState('')
   const availableIds = ids_assets[assetName] || [];
-  // const temp = useRef('')
-  // const volt = useRef('')
   const [temp, setTemp] = useState('')
   const [volt, setVolt] = useState('')
+  const [staticData, setStaticData] = useState({})
+  const [dataOn, setDataOn] = useState(false)
   const handleNameChange = (e) => {
     setAssetName(e.target.value)
     setAssetId('')
@@ -26,6 +30,7 @@ export default function MainPage() {
 
   const handleIdChange = (e) => {
     setAssetId(e.target.value);
+    
   };
 
   const handleStyleChange = (e) => {
@@ -35,21 +40,19 @@ export default function MainPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsChartsVisible(true)
+    setDataOn(prev => !prev)
     const param = { 'asset_id': assetId }
-    if (chartStyle === 'DYNAMIC') { setMessage(assetId); }
-    else {
-      PostDataFetch(param, 'http://192.168.0.126:8080/waveform')
-        .then(result => console.log(result))
-    }
     PostDataFetch(param, 'http://192.168.0.126:8080/tempvolt')
-      .then(result => {    
-        setVolt(result.voltage);
-        setTemp(result.temperature)
-      })
+    .then(result => {    
+      setVolt(result.voltage);
+      setTemp(result.temperature)
+    })
+    if (chartStyle === 'DYNAMIC') { setMessage(assetId + ', ' + chartStyle + ', wave'); }
+    else { setStaticMessage(assetId + ', ' + chartStyle + ', wave'); }
+    setIsChartsVisible(true)
   }
 
-  console.log(temp.current, volt.current)
+  console.log('chartvis', isChartsVisible)
 
   return (
     <>
@@ -79,12 +82,11 @@ export default function MainPage() {
               </label>
             </div>
 
-            <Button type='submit' name='START' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
-                                           hover:bg-blue-600 focus:outline-none focus:ring-2
-                                           focus:ring-blue-400 focus:ring-opacity-75 mr-4'/>
-            {/* <Button type='submit' name='END' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
-                                           hover:bg-blue-600 focus:outline-none focus:ring-2
-                                           focus:ring-blue-400 focus:ring-opacity-75 mr-4'/> */}
+            <Button type='submit' 
+                    name={(dataOn === false) ? 'START' : 'STOP'}
+                    text={(dataOn === false) ? 'bg-blue-500 text-white px-4 py-1 rounded-full shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mr-4' 
+                                            : 'bg-red-500 text-white px-4 py-1 rounded-full shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 mr-4'}
+                      />
           </form>
         </div>
       </div>
@@ -92,12 +94,15 @@ export default function MainPage() {
       <div className="flex w-full p-10 ">
 
         <div className="w-2/3 flex flex-col justify-center items-center">
-          {isChartsVisible && <span className='font-bold text-3xl border-b-4 border-black'>
-            RealTime Waveform Charts
-          </span>}
-          {/* {isChartsVisible && <WebSocketProvider message={message} />} */}
-          {/* {message && <WebSocketProvider message={message} />} */}
-          <WebSocketProvider message={message} />
+          
+          {isChartsVisible && 
+          <span className='font-bold text-3xl border-b-4 border-black'>
+           { chartStyle === 'DYNAMIC' ? 'RealTime Dynamic Waveform Charts': 'RealTime Static Waveform Charts'}
+          </span>}         
+          { chartStyle === "DYNAMIC" ? <WebSocketProvider message={message} />    
+          : <WebSocketStatic message={staticMessage} dataon={dataOn} style={chartStyle} />       }      
+          {/* <WebSocketStatic message={staticMessage} dataon={dataOn} style={chartStyle} />             */}
+        
         </div>
         <div className='w-1/3 justify-start'>
           <div className='h-1/2' >

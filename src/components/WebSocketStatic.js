@@ -1,10 +1,10 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import RealtimeChart from './RealtimeChart';
+import RealtimeStaticChart from './RealtimeStaticChart';
 
 
-export default function WebSocketProvider({ message, dataon, style }) {
-    // console.log('websocket', message, dataon, style)
+export default function WebSocketStatic({ message, dataon, style }) {
+    console.log('websocket', message, dataon, style)
     const [socket, setSocket] = useState(null);
     const [data, setData] = useState({
         x: [],
@@ -28,21 +28,16 @@ export default function WebSocketProvider({ message, dataon, style }) {
                 const realTimeData = JSON.parse(event.data);
                 // console.log('Received data:', realTimeData);
 
-                // console.log('wave_x', realTimeData.waveform_x)
-                const newData = { 
-                    x : realTimeData.x, 
-                    y : realTimeData.y, 
-                    z : realTimeData.z,
+                // console.log('wave_x', realTimeData.x)
+                const newData = {
+                    x: realTimeData.x,
+                    y: realTimeData.y,
+                    z: realTimeData.z,
                 }
 
                 const nowTime = new Date().toISOString();
 
-                setData((prevData) => ({
-                    x: [...prevData.x, { time: nowTime, value: newData.x }],
-                    y: [...prevData.y, { time: nowTime, value: newData.y }],
-                    z: [...prevData.z, { time: nowTime, value: newData.z }],
-                }));
-
+                setData(newData);
             } catch (error) {
                 console.error('WebSocket error:', error);
                 console.error('Error message:', error.message);
@@ -89,13 +84,13 @@ export default function WebSocketProvider({ message, dataon, style }) {
             {data && (data.x.length > 0 || data.y.length > 0 || data.z.length > 0) ? (
                 <>
                     {data.x.length > 0 && (
-                        <RealtimeChart data={data.x} axis='waveform_x' colour='#6f63b9' />
+                        <RealtimeStaticChart data={data.x} axis='waveform_x' colour='#6f63b9' />
                     )}
                     {data.y.length > 0 && (
-                        <RealtimeChart data={data.y} axis='waveform_y' colour='#ADD8E6' />
+                        <RealtimeStaticChart data={data.y} axis='waveform_y' colour='#ADD8E6' />
                     )}
                     {data.z.length > 0 && (
-                        <RealtimeChart data={data.z} axis='waveform_z' colour='#aadd80' />
+                        <RealtimeStaticChart data={data.z} axis='waveform_z' colour='#aadd80' />
                     )}
                 </>
             ) : null}

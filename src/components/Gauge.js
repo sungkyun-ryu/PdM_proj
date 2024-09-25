@@ -11,12 +11,12 @@ export default function Gauge({opt, val}) {
       {
         name: 'Voltage',
         type: 'gauge',
-        min: 0, 
+        min: 1.5, 
         max: 3.5, 
         detail: {
           formatter: '{value}',
           textStyle: {
-            fontSize: 20, 
+            fontSize: 15, 
             // color: '#000', 
           }
         },
