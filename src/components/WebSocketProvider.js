@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import RealtimeChart from './RealtimeChart';
 
 
-export default function WebSocketProvider({ message, dataon, style }) {
-    // console.log('websocket', message, dataon, style)
+export default function WebSocketProvider({ message }) {
+    console.log('websocket', message)
     const [socket, setSocket] = useState(null);
     const [data, setData] = useState({
         x: [],
@@ -24,9 +24,11 @@ export default function WebSocketProvider({ message, dataon, style }) {
         };
 
         ws.onmessage = (event) => {
+            console.log('온메시지')
             try {
+
                 const realTimeData = JSON.parse(event.data);
-                // console.log('Received data:', realTimeData);
+                console.log('Received data:', realTimeData);
 
                 // console.log('wave_x', realTimeData.waveform_x)
                 const newData = { 
@@ -67,7 +69,7 @@ export default function WebSocketProvider({ message, dataon, style }) {
                 ws.close();
             }
         };
-    }, []);
+    },[message]);
 
     useEffect(() => {
         if (socket && message && isOpen) {
@@ -78,10 +80,26 @@ export default function WebSocketProvider({ message, dataon, style }) {
             } else {
                 console.log('Empty message not sent');
             }
-        }
+        }; 
+        // const sendMessage = () => {
+        //     if (socket && message && isOpen) {
+        //         console.log('===> readyState', socket.readyState);
+        //         if (socket.readyState === WebSocket.OPEN) {
+        //             socket.send(message);
+        //             console.log('Message sent:', message);
+        //         } else {
+        //             console.log('Socket not open, message not sent');
+        //         }
+        //     }
+        // };
+        // const timeoutId = setTimeout(() => {
+        //     sendMessage();
+        // }, 1000);
+    
+        // return () => clearTimeout(timeoutId); 
+       
     }, [message, socket, isOpen])
 
-    console.log('message', message)
     console.log('data', data)
 
     return (
@@ -102,3 +120,7 @@ export default function WebSocketProvider({ message, dataon, style }) {
         </div>
     )
 }
+
+
+
+

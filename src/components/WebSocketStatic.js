@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import RealtimeStaticChart from './RealtimeStaticChart';
 
 
-export default function WebSocketStatic({ message, dataon, style }) {
-    console.log('websocket', message, dataon, style)
+export default function WebSocketStatic({ message }) {
+    console.log('websocket', message)
     const [socket, setSocket] = useState(null);
     const [data, setData] = useState({
         x: [],
@@ -26,7 +26,7 @@ export default function WebSocketStatic({ message, dataon, style }) {
         ws.onmessage = (event) => {
             try {
                 const realTimeData = JSON.parse(event.data);
-                // console.log('Received data:', realTimeData);
+                console.log('Received data:', realTimeData);
 
                 // console.log('wave_x', realTimeData.x)
                 const newData = {
@@ -34,10 +34,10 @@ export default function WebSocketStatic({ message, dataon, style }) {
                     y: realTimeData.y,
                     z: realTimeData.z,
                 }
-
                 const nowTime = new Date().toISOString();
 
                 setData(newData);
+
             } catch (error) {
                 console.error('WebSocket error:', error);
                 console.error('Error message:', error.message);
@@ -62,7 +62,7 @@ export default function WebSocketStatic({ message, dataon, style }) {
                 ws.close();
             }
         };
-    }, []);
+    }, [message]);
 
     useEffect(() => {
         if (socket && message && isOpen) {
@@ -76,8 +76,7 @@ export default function WebSocketStatic({ message, dataon, style }) {
         }
     }, [message, socket, isOpen])
 
-    console.log('message', message)
-    console.log('data', data)
+    // console.log('staticdata', data)
 
     return (
         <div className="p-20 w-full">
@@ -97,3 +96,11 @@ export default function WebSocketStatic({ message, dataon, style }) {
         </div>
     )
 }
+
+
+
+
+
+
+
+
