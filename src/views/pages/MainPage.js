@@ -14,6 +14,7 @@ export default function MainPage() {
   const message = useRef('')
   const [staticMessage, setStaticMessage] = useState('');
   const [assetName, setAssetName] = useState('')
+  // const assetName = useRef('')
   const [assetId, setAssetId] = useState('');
   const [isChartsVisible, setIsChartsVisible] = useState(false)
   const [chartStyle, setChartStyle] = useState('')
@@ -21,9 +22,13 @@ export default function MainPage() {
   const availableIds = ids_assets[assetName] || [];
   const [temp, setTemp] = useState('')
   const [volt, setVolt] = useState('')
+  // const dataOn = useRef(false)
   const [dataOn, setDataOn] = useState(false)
+  // const [ready, setReady] = useState(false)
+
   const handleNameChange = (e) => {
     setAssetName(e.target.value)
+    // assetName.current = e.target.value
     setAssetId('')
   }
 
@@ -41,32 +46,55 @@ export default function MainPage() {
     setDataType(e.target.value)
   }
 
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (chartStyle === 'DYNAMIC'){
+  //   setDataOn(prev => !prev)}
+  //   const param = { 'asset_id': assetId }
+  //   PostDataFetch(param, 'http://192.168.0.126:8080/tempvolt')
+  //   .then(result => {    
+  //     setVolt(result.voltage);
+  //     setTemp(result.temperature)
+  //   })
+
+  //   if (chartStyle === 'DYNAMIC') { 
+  //     message.current = `${assetId}, ${chartStyle}, ${dataType}`}
+  //   else { setStaticMessage(assetId + ', ' + chartStyle + ', ' + dataType);}
+  //   setIsChartsVisible(true)
+  // }
+
   const handleSubmit = (e) => {
+
+    // if(!assetId) {alert('Please Choose Asset Id')}
+    // if(!assetName) {alert('Please Choose Asset Name')}
+    // if(!dataType) {alert('Please Choose Data Type')}
+    // if(!chartStyle) {alert('Please Choose Chart Style')}
+    
+    if (assetId && assetName && dataType && chartStyle) {
+    // setReady(true);       
+    if(dataOn === false) {
     e.preventDefault();
-    setDataOn(prev => !prev)
+    if (chartStyle === 'DYNAMIC'){
+    setDataOn(prev => !prev)}
+    if (assetId) {
     const param = { 'asset_id': assetId }
     PostDataFetch(param, 'http://192.168.0.126:8080/tempvolt')
     .then(result => {    
       setVolt(result.voltage);
       setTemp(result.temperature)
-    })
-    
-    console.log('차트스타일', chartStyle)
-    // if (chartType == 'SPECTRUM'){ setMessage(assetId + ', ' + chartStyle + ', spec')}
-    // else { setMessage(assetId + ', ' + chartStyle + ', wave')}
-    // console.log('charttype',chartType, chartStyle)
-    if (chartStyle === 'DYNAMIC') { console.log('이프 들어옴')
-      // setMessage(assetId + ', ', chartStyle +', ' + dataType )
-      message.current = `${assetId}, ${chartStyle}, ${dataType}`
-      console.log('이프메시지', message.current)}
-      // { setMessage(assetId + ', ' + chartStyle + ', ', + chartType); }
-        else { setStaticMessage(assetId + ', ' + chartStyle + ', ' + dataType);
-          console.log('이프스태틱메시지', staticMessage)
-         }
+    })}
 
-    
-  
+    if (chartStyle === 'DYNAMIC') { 
+      message.current = `${assetId}, ${chartStyle}, ${dataType}`}
+    else { setStaticMessage(assetId + ', ' + chartStyle + ', ' + dataType);}
     setIsChartsVisible(true)
+    }
+    else {
+      console.log('dataon', dataOn)
+    }
+  } else {
+    alert('Please Choose All the Options')
+  }
   }
 
   console.log('chartvis', isChartsVisible)
@@ -104,8 +132,11 @@ export default function MainPage() {
 
 
               <label className="flex text-xl font-bold py-3 pr-8 items-center" > <span>Chart Style :</span> &nbsp;
-                <Selection choices={['DYNAMIC', 'STATIC']} text={'font-normal text-lg'}
-                  func={handleStyleChange} d_value={'Chart Style '} />
+                <Selection choices={(dataType === 'WAVEFORM') ? 
+                ['DYNAMIC', 'STATIC'] : ['STATIC']} text={'font-normal text-lg'}
+                  func={handleStyleChange} d_value={'Chart Style '}
+                  // selectedValue={chartStyle} 
+                  />
               </label>
 
               
@@ -127,12 +158,14 @@ export default function MainPage() {
           
           {isChartsVisible && 
           <span className='font-bold text-3xl border-b-4 border-black'>
-           { chartStyle === 'DYNAMIC' ? 'RealTime Dynamic Waveform Charts': 'RealTime Static Waveform Charts'}
+           {/* { chartStyle === 'DYNAMIC' ? 'RealTime Dynamic Waveform Charts': 'RealTime Static Waveform Charts'}
+          </span>}          */}
+           { `RealTime ${dataType} ${chartStyle} Charts`}
           </span>}         
           {/* { chartStyle === "DYNAMIC" ? <WebSocketProvider message={message.current} />    
           : <WebSocketStatic message={staticMessage} /> }       */}
           { chartStyle === "STATIC" ? <WebSocketStatic message={staticMessage} /> 
-          :<WebSocketProvider message={message.current} />    
+          :<WebSocketProvider message={message.current} dataon={dataOn} />    
            }      
         
         </div>

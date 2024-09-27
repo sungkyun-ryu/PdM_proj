@@ -1,26 +1,38 @@
 import React from 'react'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import RealtimeChart from './RealtimeChart';
 
 
-export default function WebSocketProvider({ message }) {
+export default function WebSocketProvider({ message, dataon }) {
     console.log('websocket', message)
     const [socket, setSocket] = useState(null);
+    // const socket = useRef(null)
     const [data, setData] = useState({
         x: [],
         y: [],
         z: [],
     })
     const [isOpen, setIsOpen] = useState(false);
+    // const isOpen = useRef(false)
+
 
     useEffect(() => {
 
+        if (!dataon && socket) {
+            socket.close();
+            setSocket(null);
+            setIsOpen(false);
+            return;
+        }
+
+        if(dataon) {
         const userid = sessionStorage.getItem('userid');
         const ws = new WebSocket(`ws://192.168.0.126:8080/realtimews?auth=${userid}`);
 
         ws.onopen = () => {
             console.log('WebSocket connection established.');
             setIsOpen(true);
+            // isOpen.current = true;
         };
 
         ws.onmessage = (event) => {
@@ -51,6 +63,7 @@ export default function WebSocketProvider({ message }) {
                 console.error('Error type:', error.type);
                 console.error('Error target:', error.target);
             }
+
         };
 
         ws.onerror = (error) => {
@@ -60,14 +73,17 @@ export default function WebSocketProvider({ message }) {
         ws.onclose = () => {
             console.log('WebSocket connection closed.');
             setIsOpen(false);
+            // isOpen.current = false;
         };
 
         setSocket(ws);
+        // socket.current = ws;
 
         return () => {
             if (ws.readyState === WebSocket.OPEN) {
                 ws.close();
             }
+        }
         };
     },[message]);
 

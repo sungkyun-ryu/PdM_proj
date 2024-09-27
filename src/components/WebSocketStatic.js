@@ -83,13 +83,13 @@ export default function WebSocketStatic({ message }) {
             {data && (data.x.length > 0 || data.y.length > 0 || data.z.length > 0) ? (
                 <>
                     {data.x.length > 0 && (
-                        <RealtimeStaticChart data={data.x} axis='waveform_x' colour='#6f63b9' />
+                        <RealtimeStaticChart data={data.x} axis='spectrum_x' colour='#6f63b9' />
                     )}
                     {data.y.length > 0 && (
-                        <RealtimeStaticChart data={data.y} axis='waveform_y' colour='#ADD8E6' />
+                        <RealtimeStaticChart data={data.y} axis='spectrum_y' colour='#ADD8E6' />
                     )}
                     {data.z.length > 0 && (
-                        <RealtimeStaticChart data={data.z} axis='waveform_z' colour='#aadd80' />
+                        <RealtimeStaticChart data={data.z} axis='spectrum_z' colour='#aadd80' />
                     )}
                 </>
             ) : null}
