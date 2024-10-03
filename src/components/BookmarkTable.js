@@ -26,10 +26,11 @@ export default function BookmarkTable({ rows, columns, text, multiCheck, buttonf
             end_at: row.endTime,
             cols: row.cols,
         };
-
+        console.log('bookmarkParmas===>', bookmarkParams)
         navigate('/charts', { state: { bookmarkParams } });
     };
 
+    
     useEffect(() => {
         const selectedRowData = getSelectedRowData();
         if (selectedRowData) {

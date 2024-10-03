@@ -1,20 +1,28 @@
 import ReactECharts from 'echarts-for-react';
 import { useEffect, useRef, useState } from 'react';
+import { spec_freq } from './Assets';
 
-export default function RealtimeStaticChart({ data, axis, colour }) {
+export default function RealtimeStaticChart({ data, axis, colour, datatype }) {
 
+    console.log('realtimedatatype', datatype)
     const chartRef = useRef(null);
-    //   const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-    //   const oneMinutesAgo = Date.now() - 1 * 60 * 1000;
-    //   const threeSecondsAgo = Date.now() - 3 * 1000;
     const [zoomState, setZoomState] = useState({ start: 0, end: 100 });
-    // const [seriesData, setSeriesData] = useState([]);
 
     const transformData = (data) => {
-        return data.map((value, index) =>
-            [index, value],
-        )
-    };
+        let sdata;
+
+        if (datatype === "Spectrum") {
+            sdata = data.map((value, index) =>
+                [0.78125 * index, value]
+            );
+        } else {
+            sdata = data.map((value, index) =>
+                [index, value]
+            );
+        }
+        return sdata;
+    }
+
 
     const seriesData = [{
         name: axis,
@@ -27,28 +35,42 @@ export default function RealtimeStaticChart({ data, axis, colour }) {
 
     const options = {
         title: {
-            text: `${axis} chart`,
+            text: datatype === 'Spectrum' ? `spectrum_${axis}` : `waveform__${axis}`,
             top: 'center',
             left: '0%'
         },
-        tooltip: {
+        tooltip: datatype === 'Spectrum' ? {
             trigger: 'axis',
+        } : {
+            trigger: 'item',
+            formatter: function (params) {
+                if (params.length > 0 && params[0].data) {
+                return `${params[0].data[1]}`;
+            }
+            return 'No Data'; },
         },
+        // tooltip: {trigger:'axis'},
         grid: {
             left: '20%',
             right: '10%',
             bottom: '10%',
             top: '30%'
         },
-        xAxis: {
-            type: 'time',
-            axisLabel: {
-                show: false
+        xAxis:
+            (datatype === "Spectrum") ? {
+                type: 'value',
+                name: 'Frequency (Hz)',
+                min: 0,
+                max: 1600,
+            } : {
+                type: 'time',
+                axisLabel: {
+                    show: false
+                },
+                axisTick: {
+                    show: false,
+                },
             },
-            axisTick: {
-                show: false,
-            },
-        },
         yAxis: {
             type: 'value',
         },
@@ -76,6 +98,8 @@ export default function RealtimeStaticChart({ data, axis, colour }) {
             };
         }
     }, [zoomState]);
+
+    console.log('transformdata', transformData(data))
 
     return (
         <div>

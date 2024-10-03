@@ -12,6 +12,8 @@ import { asset_names, col_names, ids_assets } from "../../components/Assets";
 import Modal from "../../components/Modal";
 import Toast from "../../components/Toast";
 import { useLocation } from "react-router-dom";
+import CheckLogin from "../../components/CheckLogin";
+
 
 export default function Charts() {
 
@@ -39,6 +41,7 @@ export default function Charts() {
   const availableIds = ids_assets[asset] || [];
   const location = useLocation();
   const { bookmarkParams } = location.state || {};
+  const [bookmarkshow, setBookmarkshow] = useState(false)
 
   console.log('columns', columns)
 
@@ -52,7 +55,7 @@ export default function Charts() {
         console.error("Invalid date/time string:", eDateTimeString);
         return null;
       }
-      return null;
+      // return null;
     }
   }
 
@@ -78,7 +81,7 @@ export default function Charts() {
 
         .then(result => {
           const uniqueData = addingUniqueId(result);
-
+          // console.log('uniqueData', uniqueData)
           setTableRows(uniqueData);
           setColumns(ProduceCols(checkboxesRef.current));
 
@@ -158,7 +161,7 @@ export default function Charts() {
       }
     }
   };
-
+  
   const handleConfirm = () => {
 
     const params = {
@@ -217,16 +220,14 @@ export default function Charts() {
     if (bookmarkParams) {
       checkboxesRef.current = bookmarkParams.cols
       console.log('Received parameters:', bookmarkParams);
-      fetchChartData(bookmarkParams); 
+      fetchChartData(bookmarkParams);       
+      console.log(bookmarkParams)
     }
   }, [bookmarkParams]);
 
-  console.log('verticallines', verticalLines.current)
-
-
-
-  return (
+  return (    
     <div>
+
       <header className='bg-black p-3'>
         <Nav />
       </header>
@@ -312,6 +313,7 @@ export default function Charts() {
           </div>
         ))}
       </div>
+
     </div>
   )
 };

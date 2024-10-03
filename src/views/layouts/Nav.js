@@ -20,8 +20,11 @@ export default function Nav() {
                     <a href='/home' className= 'mr-10 text-5xl text-white'>
                         PREDICTIVE MAINTENANCE 
                     </a>
+                    <a href='/histwave' className= 'mr-10 text-2xl text-white'>
+                        WaveData
+                    </a>
                     <a href='/charts' className= 'mr-10 text-2xl text-white'>
-                        Charts 
+                        SigData
                     </a>
                     <a href='/bookmark' className= 'mr-10 text-2xl text-white'>
                         Bookmark 

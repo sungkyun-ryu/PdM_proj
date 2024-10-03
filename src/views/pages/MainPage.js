@@ -7,6 +7,7 @@ import WebSocketProvider from "../../components/WebSocketProvider";
 import { asset_names, ids_assets } from "../../components/Assets";
 import { PostDataFetch } from "../../functions/DataFetching";
 import WebSocketStatic from "../../components/WebSocketStatic";
+import CheckLogin from "../../components/CheckLogin";
 
 export default function MainPage() {
 
@@ -17,14 +18,16 @@ export default function MainPage() {
   // const assetName = useRef('')
   const [assetId, setAssetId] = useState('');
   const [isChartsVisible, setIsChartsVisible] = useState(false)
-  const [chartStyle, setChartStyle] = useState('')
+  // const [chartStyle, setChartStyle] = useState('')
   const [dataType, setDataType] = useState('')
   const availableIds = ids_assets[assetName] || [];
   const [temp, setTemp] = useState('')
   const [volt, setVolt] = useState('')
   // const dataOn = useRef(false)
-  const [dataOn, setDataOn] = useState(false)
+  // const [dataOn, setDataOn] = useState(false)
   // const [ready, setReady] = useState(false)
+  // const [chartName, setChartName] = useState('')
+  let chartName = useRef('')
 
   const handleNameChange = (e) => {
     setAssetName(e.target.value)
@@ -37,10 +40,10 @@ export default function MainPage() {
     
   };
 
-  const handleStyleChange = (e) => {
-    setChartStyle(e.target.value)
-    console.log(chartStyle)
-  }
+  // const handleStyleChange = (e) => {
+  //   setChartStyle(e.target.value)
+  //   console.log(chartStyle)
+  // }
 
   const handleTypeChange = (e) => {
     setDataType(e.target.value)
@@ -64,44 +67,45 @@ export default function MainPage() {
   // }
 
   const handleSubmit = (e) => {
-
-    // if(!assetId) {alert('Please Choose Asset Id')}
-    // if(!assetName) {alert('Please Choose Asset Name')}
-    // if(!dataType) {alert('Please Choose Data Type')}
-    // if(!chartStyle) {alert('Please Choose Chart Style')}
     
-    if (assetId && assetName && dataType && chartStyle) {
+    if (assetId && assetName && dataType) {
     // setReady(true);       
-    if(dataOn === false) {
+    // if(dataOn === false) {
     e.preventDefault();
-    if (chartStyle === 'DYNAMIC'){
-    setDataOn(prev => !prev)}
-    if (assetId) {
+    // if (chartStyle === 'DYNAMIC'){
+    // setDataOn(prev => !prev)}
+    // if (assetId) {
     const param = { 'asset_id': assetId }
     PostDataFetch(param, 'http://192.168.0.126:8080/tempvolt')
     .then(result => {    
       setVolt(result.voltage);
       setTemp(result.temperature)
-    })}
+    })
+  // }
+    if(dataType === "SPECTRUM") {chartName.current ='Spectrum'}
 
-    if (chartStyle === 'DYNAMIC') { 
-      message.current = `${assetId}, ${chartStyle}, ${dataType}`}
-    else { setStaticMessage(assetId + ', ' + chartStyle + ', ' + dataType);}
+    else {chartName.current ='Waveform'}
+    // if (chartStyle === 'DYNAMIC') { 
+    //   message.current = `${assetId}, ${chartStyle}, ${dataType}`}
+    // else { 
+    setStaticMessage(assetId + ', STATIC, ' + dataType);
     setIsChartsVisible(true)
     }
-    else {
-      console.log('dataon', dataOn)
-    }
-  } else {
+    // else {
+    //   console.log('dataon', dataOn)
+    // }
+  // } 
+  else {
     alert('Please Choose All the Options')
   }
   }
 
   console.log('chartvis', isChartsVisible)
-  console.log('message', message)
+  console.log('staticmessage', staticMessage)
 
   return (
     <>
+    <CheckLogin>
       <header className='bg-black p-3'>
         <Nav />
       </header>
@@ -117,10 +121,10 @@ export default function MainPage() {
                 />
               </label>
 
-              <label className="flex text-xl font-bold py-3 pr-8 items-center"> <span>Data Type :</span> &nbsp;
+              {/* <label className="flex text-xl font-bold py-3 pr-8 items-center"> <span>Data Type :</span> &nbsp;
                 <Selection choices={['SPECTRUM', 'WAVEFORM']} text={'font-normal text-lg'}
                   func={handleTypeChange} d_value={'Chart Type '} />
-              </label>              
+              </label>               */}
               </div>
 
               <div > 
@@ -131,22 +135,28 @@ export default function MainPage() {
               </label>
 
 
-              <label className="flex text-xl font-bold py-3 pr-8 items-center" > <span>Chart Style :</span> &nbsp;
+              {/* <label className="flex text-xl font-bold py-3 pr-8 items-center" > <span>Chart Style :</span> &nbsp;
                 <Selection choices={(dataType === 'WAVEFORM') ? 
                 ['DYNAMIC', 'STATIC'] : ['STATIC']} text={'font-normal text-lg'}
                   func={handleStyleChange} d_value={'Chart Style '}
                   // selectedValue={chartStyle} 
                   />
-              </label>
+              </label> */}
 
               
+              </div>
+              <div>
+              <label className="flex text-xl font-bold py-3 pr-8 items-center"> <span>Data Type :</span> &nbsp;
+                <Selection choices={['SPECTRUM', 'WAVEFORM']} text={'font-normal text-lg'}
+                  func={handleTypeChange} d_value={'Chart Type '} />
+              </label>
               </div>
             </div>
 
             <Button type='submit' 
-                    name={(dataOn === false) ? 'START' : 'STOP'}
-                    text={(dataOn === false) ? 'bg-blue-500 text-white px-4 py-1 rounded-full shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mr-4' 
-                                            : 'bg-red-500 text-white px-4 py-1 rounded-full shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 mr-4'}
+                    // name={(dataOn === false) ? 'START' : 'STOP'}
+                    name='START'
+                    text={'bg-blue-500 text-white px-4 py-1 rounded-full shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mr-4'} 
                       />
           </form>
         </div>
@@ -160,36 +170,59 @@ export default function MainPage() {
           <span className='font-bold text-3xl border-b-4 border-black'>
            {/* { chartStyle === 'DYNAMIC' ? 'RealTime Dynamic Waveform Charts': 'RealTime Static Waveform Charts'}
           </span>}          */}
-           { `RealTime ${dataType} ${chartStyle} Charts`}
+           { `RealTime ${chartName.current} Charts`}
           </span>}         
           {/* { chartStyle === "DYNAMIC" ? <WebSocketProvider message={message.current} />    
           : <WebSocketStatic message={staticMessage} /> }       */}
-          { chartStyle === "STATIC" ? <WebSocketStatic message={staticMessage} /> 
-          :<WebSocketProvider message={message.current} dataon={dataOn} />    
-           }      
+          {/* { chartStyle === "STATIC" ?  */}
+          <WebSocketStatic message={staticMessage} datatype={chartName.current} /> 
+           {/* :<WebSocketProvider message={message.current} />     */}
+          {/* }       */}
         
         </div>
-        <div className='w-1/3 justify-start'>
-          <div className='h-1/2' >
+
+<div className="flex flex-col w-1/3">
+<div className='h-1/2 w-1/2 ' >
             {isChartsVisible && (
             <>
-            <div className='pb-16'><span className='font-bold text-3xl border-b-4 border-black'>
-              Temperature
-            </span></div>
+            <div className='pb-16 flex justify-center'>
+            <span className='font-bold text-3xl border-b-4 border-black'>
+              Imbalance Score
+            </span>
+            </div>
             <Gauge opt={'temp'} val={temp}/>
             </>)}
           </div>
-          <div className='h-1/2 mt-20'>
+
+        <div className='flex full justify-start pr-20'>          
+          <div className='h-1/2 w-1/2' >
+            {isChartsVisible && (
+            <>
+            <div className='pb-16 flex justify-center'>
+            <span className='font-bold text-3xl border-b-4 border-black'>
+              Temperature
+            </span>
+            </div>
+            <Gauge opt={'temp'} val={temp}/>
+            </>)}
+          </div>
+          <div className='h-1/2 w-1/2'>
             {isChartsVisible && (
               <>
-              <div className='pb-16'><span className='font-bold text-3xl border-b-4 border-black '>
+              <div className='pb-16 flex justify-center'>
+                <span className='font-bold text-3xl border-b-4 border-black '>
               Voltage
-            </span></div>
+            </span>
+            </div>
             <Gauge opt={'volt'} val={volt} /></>)}
           </div>
+          </div>
         </div>
-      </div>
 
+
+
+        </div>
+      </CheckLogin>
     </>
   )
 }

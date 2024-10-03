@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import RealtimeStaticChart from './RealtimeStaticChart';
 
 
-export default function WebSocketStatic({ message }) {
-    console.log('websocket', message)
+export default function WebSocketStatic({ message, datatype }) {
+    console.log('websocket', message, datatype)
     const [socket, setSocket] = useState(null);
     const [data, setData] = useState({
         x: [],
@@ -28,13 +28,15 @@ export default function WebSocketStatic({ message }) {
                 const realTimeData = JSON.parse(event.data);
                 console.log('Received data:', realTimeData);
 
-                // console.log('wave_x', realTimeData.x)
                 const newData = {
+                    created_at: new Date(realTimeData.created_at * 1000).toLocaleString('en-KR', {
+                        timeZone: 'Asia/Seoul',
+                    }),
                     x: realTimeData.x,
                     y: realTimeData.y,
                     z: realTimeData.z,
                 }
-                const nowTime = new Date().toISOString();
+                // const nowTime = new Date().toISOString();
 
                 setData(newData);
 
@@ -76,20 +78,26 @@ export default function WebSocketStatic({ message }) {
         }
     }, [message, socket, isOpen])
 
-    // console.log('staticdata', data)
+    console.log('data.x', data.x.length)
 
     return (
         <div className="p-20 w-full">
+
             {data && (data.x.length > 0 || data.y.length > 0 || data.z.length > 0) ? (
                 <>
+                    <div className='flex'>
+                        {/* {(datatype === 'Waveform') && */}
+                            <span className='font-bold text-lg'>{`Observed at: ${data.created_at}`}</span>
+                        {/* } */}
+                    </div>
                     {data.x.length > 0 && (
-                        <RealtimeStaticChart data={data.x} axis='spectrum_x' colour='#6f63b9' />
+                        <RealtimeStaticChart data={data.x} axis='x' colour='#6f63b9' datatype={datatype} />
                     )}
                     {data.y.length > 0 && (
-                        <RealtimeStaticChart data={data.y} axis='spectrum_y' colour='#ADD8E6' />
+                        <RealtimeStaticChart data={data.y} axis='y' colour='#ADD8E6' datatype={datatype} />
                     )}
                     {data.z.length > 0 && (
-                        <RealtimeStaticChart data={data.z} axis='spectrum_z' colour='#aadd80' />
+                        <RealtimeStaticChart data={data.z} axis='z' colour='#aadd80' datatype={datatype} />
                     )}
                 </>
             ) : null}

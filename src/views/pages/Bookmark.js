@@ -6,6 +6,7 @@ import axios from 'axios'
 import { BookmarkCols } from '../../functions/ProduceCols'
 import { useState, useEffect } from 'react'
 import { addingUniqueId } from '../../functions/ProduceRows'
+import CheckLogin from '../../components/CheckLogin'
 
 
 export default function Bookmark() {
@@ -18,7 +19,6 @@ export default function Bookmark() {
 
     const loadBookmark = async () => {
         const token = sessionStorage.getItem('Token')
-        console.log(token)
         try { 
             const response = await axios.get(
                 'http://192.168.0.126:8080/charts/loadbookmark', {
@@ -55,6 +55,7 @@ export default function Bookmark() {
     // }
     return (
         <div>
+        <CheckLogin>
             <header className='bg-black p-3'>
                 <Nav />
             </header>
@@ -76,6 +77,7 @@ export default function Bookmark() {
                                                             // multiCheck={multiCheck} 
                                                             />}
             </div>
+            </CheckLogin>
         </div>
     )
 }
