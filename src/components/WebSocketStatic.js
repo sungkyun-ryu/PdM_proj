@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import RealtimeStaticChart from './RealtimeStaticChart';
 
 
-export default function WebSocketStatic({ message, datatype }) {
+export default function WebSocketStatic({ message, datatype, health, sethealth }) {
     console.log('websocket', message, datatype)
     const [socket, setSocket] = useState(null);
     const [data, setData] = useState({
@@ -37,7 +37,10 @@ export default function WebSocketStatic({ message, datatype }) {
                     z: realTimeData.z,
                 }
                 // const nowTime = new Date().toISOString();
-
+                const model = realTimeData.model;
+                sethealth(model)
+                
+                
                 setData(newData);
 
             } catch (error) {

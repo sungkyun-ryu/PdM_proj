@@ -28,6 +28,7 @@ export default function MainPage() {
   // const [ready, setReady] = useState(false)
   // const [chartName, setChartName] = useState('')
   let chartName = useRef('')
+  const [health, setHealth] = useState(null)
 
   const handleNameChange = (e) => {
     setAssetName(e.target.value)
@@ -102,10 +103,13 @@ export default function MainPage() {
 
   console.log('chartvis', isChartsVisible)
   console.log('staticmessage', staticMessage)
+  useEffect(() => {
+    console.log('HEALTH', health)
+  }, [health] )
 
   return (
     <>
-    <CheckLogin>
+    {/* <CheckLogin> */}
       <header className='bg-black p-3'>
         <Nav />
       </header>
@@ -166,7 +170,7 @@ export default function MainPage() {
 
         <div className="w-2/3 flex flex-col justify-center items-center">
           
-          {isChartsVisible && 
+          {isChartsVisible &&  
           <span className='font-bold text-3xl border-b-4 border-black'>
            {/* { chartStyle === 'DYNAMIC' ? 'RealTime Dynamic Waveform Charts': 'RealTime Static Waveform Charts'}
           </span>}          */}
@@ -175,23 +179,26 @@ export default function MainPage() {
           {/* { chartStyle === "DYNAMIC" ? <WebSocketProvider message={message.current} />    
           : <WebSocketStatic message={staticMessage} /> }       */}
           {/* { chartStyle === "STATIC" ?  */}
-          <WebSocketStatic message={staticMessage} datatype={chartName.current} /> 
+          <WebSocketStatic message={staticMessage} datatype={chartName.current} sethealth={setHealth}/> 
            {/* :<WebSocketProvider message={message.current} />     */}
           {/* }       */}
         
         </div>
 
 <div className="flex flex-col w-1/3">
-<div className='h-1/2 w-1/2 ' >
-            {isChartsVisible && (
-            <>
+<div className='h-1/2 w-1/2 flex justify-center' >
+            {isChartsVisible && health && (
+            <div className="flex flex-col w-full">
             <div className='pb-16 flex justify-center'>
             <span className='font-bold text-3xl border-b-4 border-black'>
-              Imbalance Score
+              Imbalance Status
             </span>
             </div>
-            <Gauge opt={'temp'} val={temp}/>
-            </>)}
+            <div className={`font-bold text-4xl border-4 border-white flex justify-center items-center py-5 px-10 rounded-full m-10
+                        ${(health == 1) ?  'bg-blue-600' : 'bg-red-600' } text-white`}>
+              {(health == 1)  ?  'HEALTHY' : 'CRITICAL' }
+            </div>
+            </div>)}
           </div>
 
         <div className='flex full justify-start pr-20'>          
@@ -222,7 +229,7 @@ export default function MainPage() {
 
 
         </div>
-      </CheckLogin>
+      {/* </CheckLogin> */}
     </>
   )
 }

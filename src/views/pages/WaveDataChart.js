@@ -54,7 +54,7 @@ export default function MainPage() {
 
     const handleSubmit = (e) => {
 
-        if (assetId && assetName && sTime && sDate) {
+        if (assetId && assetName && sTime.current && sDate.current) {
             console.log('핸들서브밋', assetId, assetName, sTime, sDate, sUnixTime())
 
             e.preventDefault();
@@ -92,8 +92,6 @@ export default function MainPage() {
     }
 
 
-    // console.log('스펙데이터.x', specData.x)
-    // console.log('웨이브데이터', waveData)
     console.log('chartvis', isChartsVisible)
 
 
