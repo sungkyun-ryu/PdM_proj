@@ -10,9 +10,6 @@ const Modal = forwardRef(({ isOpen, onClose, onConfirm, text }, ref) => {
     ref.current = comment;}  
   }, [comment, ref]);
 
-  console.log('commentref', ref);
-  console.log('comment', comment)
-
  
   if (!isOpen) return null;
 

@@ -6,15 +6,12 @@ import RealtimeChart from './RealtimeChart';
 export default function WebSocketProvider({ message, dataon }) {
     console.log('websocket', message)
     const [socket, setSocket] = useState(null);
-    // const socket = useRef(null)
     const [data, setData] = useState({
         x: [],
         y: [],
         z: [],
     })
     const [isOpen, setIsOpen] = useState(false);
-    // const isOpen = useRef(false)
-
 
     useEffect(() => {
 
@@ -32,17 +29,13 @@ export default function WebSocketProvider({ message, dataon }) {
         ws.onopen = () => {
             console.log('WebSocket connection established.');
             setIsOpen(true);
-            // isOpen.current = true;
         };
 
         ws.onmessage = (event) => {
             console.log('온메시지')
             try {
-
                 const realTimeData = JSON.parse(event.data);
                 console.log('Received data:', realTimeData);
-
-                // console.log('wave_x', realTimeData.waveform_x)
                 const newData = { 
                     x : realTimeData.x, 
                     y : realTimeData.y, 
@@ -73,11 +66,9 @@ export default function WebSocketProvider({ message, dataon }) {
         ws.onclose = () => {
             console.log('WebSocket connection closed.');
             setIsOpen(false);
-            // isOpen.current = false;
         };
 
         setSocket(ws);
-        // socket.current = ws;
 
         return () => {
             if (ws.readyState === WebSocket.OPEN) {
@@ -96,27 +87,8 @@ export default function WebSocketProvider({ message, dataon }) {
             } else {
                 console.log('Empty message not sent');
             }
-        }; 
-        // const sendMessage = () => {
-        //     if (socket && message && isOpen) {
-        //         console.log('===> readyState', socket.readyState);
-        //         if (socket.readyState === WebSocket.OPEN) {
-        //             socket.send(message);
-        //             console.log('Message sent:', message);
-        //         } else {
-        //             console.log('Socket not open, message not sent');
-        //         }
-        //     }
-        // };
-        // const timeoutId = setTimeout(() => {
-        //     sendMessage();
-        // }, 1000);
-    
-        // return () => clearTimeout(timeoutId); 
-       
+        };        
     }, [message, socket, isOpen])
-
-    console.log('data', data)
 
     return (
         <div className="p-20 w-full">

@@ -91,10 +91,6 @@ export default function MainPage() {
         }
     }
 
-
-    console.log('chartvis', isChartsVisible)
-
-
     return (
         <>
             <CheckLogin>
@@ -135,7 +131,6 @@ export default function MainPage() {
                             </div>
 
                             <Button type='submit'
-                                // name={(dataOn === false) ? 'START' : 'STOP'}
                                 name='START'
                                 text={'bg-blue-500 text-white px-4 py-1 rounded-full shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mr-4'}
                             />
@@ -148,22 +143,13 @@ export default function MainPage() {
                     <div className="p-10 w-1/2">
 
                         {waveData && (     
-                            // console.log('waveData[0]', waveData[0].x)
                             <>
                                 <div className='flex'>
-                                    {/* {(datatype === 'Waveform') && */}
                                     <span className='font-bold text-lg'>{`Observed at: ${waveData[0].created_at}`}</span>
-                                    {/* } */}
                                 </div>
-                                {/* {waveData.x.length > 0 && ( */}
                                     <RealtimeStaticChart data={waveData[0].x} axis='x' colour='#6f63b9' datatype="Waveform" />
-                                {/* )} */}
-                                {/* {waveData.y.length > 0 && ( */}
                                     <RealtimeStaticChart data={waveData[0].y} axis='y' colour='#ADD8E6' datatype="Waveform" />
-                                {/* )} */}
-                                {/* {waveData.z.length > 0 && ( */}
                                     <RealtimeStaticChart data={waveData[0].z} axis='z' colour='#aadd80' datatype="Waveform" />
-                                {/* )} */}
                             </>
                         ) }
                     </div>
@@ -172,19 +158,11 @@ export default function MainPage() {
                         {specData && (
                                                         <>
                                 <div className='flex'>
-                                    {/* {(datatype === 'Waveform') && */}
                                     <span className='font-bold text-lg'>{`Observed at: ${waveData[0].created_at}`}</span>
-                                    {/* } */}
                                 </div>
-                                {/* {specData.x.length > 0 && ( */}
                                     <RealtimeStaticChart data={specData[0].x} axis='x' colour='#6f63b9' datatype="Spectrum" />
-                                {/* )} */}
-                                {/* {specData.y.length > 0 && ( */}
                                     <RealtimeStaticChart data={specData[0].y} axis='y' colour='#ADD8E6' datatype="Spectrum" />
-                                {/* )} */}
-                                {/* {specData.z.length > 0 && ( */}
                                     <RealtimeStaticChart data={specData[0].z} axis='z' colour='#aadd80' datatype="Spectrum" />
-                                {/* )} */}
                             </>
                         )}
                     </div>

@@ -23,7 +23,6 @@ export default function LoginPage() {
 
             if (response.status === 200) {
                 const token = response.headers['authorization'];
-                // token = token.substring(7)
                 sessionStorage.setItem('Token', token);
                 sessionStorage.setItem('userid', credential.userid);
 
@@ -41,7 +40,7 @@ export default function LoginPage() {
         const userid = sessionStorage.getItem('userid');
         
         if (token && userid) {
-            navigate('/home'); // Redirect to /home if token and userid exist
+            navigate('/home'); 
         }
     }, []);
 

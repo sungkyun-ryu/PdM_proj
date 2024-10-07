@@ -117,9 +117,6 @@ export default function Chart({ cols, vis, sigData, chartClickEvent }) {
     }
   }, [sigData]);
 
-  // console.log('sigdata', sigData)
-  // console.log('seriesdata', seriesData)
-
   return (
     <div>
       <ReactECharts option={options} ref={chartRef} />

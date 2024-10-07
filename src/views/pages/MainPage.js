@@ -76,7 +76,6 @@ export default function MainPage() {
 
   return (
     <>
-    {/* <CheckLogin> */}
       <header className='bg-black p-3'>
         <Nav />
       </header>
@@ -123,8 +122,6 @@ export default function MainPage() {
           
           {isChartsVisible &&  
           <span className='font-bold text-3xl border-b-4 border-black'>
-           {/* { chartStyle === 'DYNAMIC' ? 'RealTime Dynamic Waveform Charts': 'RealTime Static Waveform Charts'}
-          </span>}          */}
            { `RealTime ${chartName.current} Charts`}
           </span>}         
 
@@ -188,7 +185,6 @@ export default function MainPage() {
 
 
         </div>
-      {/* </CheckLogin> */}
     </>
   )
 }

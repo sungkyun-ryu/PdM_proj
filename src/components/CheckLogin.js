@@ -12,14 +12,14 @@ const CheckLogin = ({ children }) => {
     
     if (!(token || userid)) {
       alert("Please log in first.");
-      navigate('/login'); // 로그인 페이지로 리디렉션
+      navigate('/login'); 
     } else {
-      setLoading(false);  // 로딩 상태 종료
+      setLoading(false);  
     }
   }, [navigate]);
 
   if (loading) {
-    // 로그인 검증 동안 Nav만 출력
+
     return (
       <header className='bg-black p-3'>
         <Nav />
@@ -27,7 +27,6 @@ const CheckLogin = ({ children }) => {
     );
   }
 
-  // 인증이 완료되면 자식 컴포넌트를 렌더링
   return <>{children}</>;
 };
 

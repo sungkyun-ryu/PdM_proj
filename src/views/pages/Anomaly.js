@@ -1,7 +1,6 @@
 import React from 'react'
 import Nav from '../layouts/Nav'
 import AnomalyTable from '../../components/BookmarkTable'
-// import Button from '../../components/Button'
 import axios from 'axios'
 import { AnomalyCols } from '../../functions/ProduceCols'
 import { useState, useEffect } from 'react'
@@ -16,7 +15,7 @@ export default function Anomaly() {
     const userid = sessionStorage.getItem('userid')
 
     const convertToKST = (timestamp) => {
-        const date = new Date(timestamp * 1000); // Convert to milliseconds
+        const date = new Date(timestamp * 1000); 
         const options = {
           timeZone: 'Asia/Seoul',
           year: 'numeric',
@@ -77,18 +76,9 @@ export default function Anomaly() {
                 <div className='flex justify-center mb-10 py-10 '>
                 <span className='font bold text-5xl p-3 border-b-4 w-auto border-b-slate-600'>Anomaly List</span>
                 </div>
-                {/* <div className='pb-4'>
-                    <Button type='submit' name='Delete' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
-                                           hover:bg-blue-600 focus:outline-none focus:ring-2
-                                           focus:ring-blue-400 focus:ring-opacity-75'
-                                        //    func = {deleteBookmark}
-                                           />
-                </div> */}
                 {isAnomalyTableVisible && <AnomalyTable columns={anomalyColumns} 
                                                             rows={anomalyRows}
-                                                            text='mb-20' 
-                                                            // multiCheck={multiCheck} 
-                                                            />}
+                                                            text='mb-20'/>}
             </div>
             </CheckLogin>
         </div>

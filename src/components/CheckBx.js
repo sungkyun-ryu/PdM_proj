@@ -1,10 +1,8 @@
-// import { Checkbox, Box } from "@mui/material"
+
 import { useState, useEffect, forwardRef } from "react"
 import Button from "./Button";
 
-// export default function CheckBx({ cols, text, isVisible, setIsVisible, ref}) {
-
-const CheckBx = forwardRef(function CheckBx({cols, text, isVisible, setIsVisible}, ref) {
+const CheckBx = forwardRef(function CheckBx({cols, isVisible, setIsVisible}, ref) {
 
   const [localSelectedCheckboxes, setLocalSelectedCheckboxes] = useState([]);
 

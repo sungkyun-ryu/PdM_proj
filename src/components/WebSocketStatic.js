@@ -36,11 +36,8 @@ export default function WebSocketStatic({ message, datatype, health, sethealth }
                     y: realTimeData.y,
                     z: realTimeData.z,
                 }
-                // const nowTime = new Date().toISOString();
                 const model = realTimeData.model;
-                sethealth(model)
-                
-                
+                sethealth(model);               
                 setData(newData);
 
             } catch (error) {
@@ -88,10 +85,8 @@ export default function WebSocketStatic({ message, datatype, health, sethealth }
 
             {data && (data.x.length > 0 || data.y.length > 0 || data.z.length > 0) ? (
                 <>
-                    <div className='flex'>
-                        {/* {(datatype === 'Waveform') && */}
-                            <span className='font-bold text-lg'>{`Observed at: ${data.created_at}`}</span>
-                        {/* } */}
+                    <div className='flex'>  
+                        <span className='font-bold text-lg'>{`Observed at: ${data.created_at}`}</span>
                     </div>
                     {data.x.length > 0 && (
                         <RealtimeStaticChart data={data.x} axis='x' colour='#6f63b9' datatype={datatype} />

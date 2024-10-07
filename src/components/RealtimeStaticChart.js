@@ -23,7 +23,6 @@ export default function RealtimeStaticChart({ data, axis, colour, datatype }) {
         return sdata;
     }
 
-
     const seriesData = [{
         name: axis,
         type: 'line',
@@ -31,7 +30,6 @@ export default function RealtimeStaticChart({ data, axis, colour, datatype }) {
         symbol: 'none',
         color: colour,
     }]
-
 
     const options = {
         title: {
@@ -49,7 +47,7 @@ export default function RealtimeStaticChart({ data, axis, colour, datatype }) {
             }
             return 'No Data'; },
         },
-        // tooltip: {trigger:'axis'},
+
         grid: {
             left: '20%',
             right: '10%',

@@ -3,30 +3,8 @@ import Paper from '@mui/material/Paper';
 import { useState, useEffect } from 'react';
 
 
-export default function Table({ rows, columns, text, 
-    // onRowSelect
-}) {
+export default function Table({ rows, columns, text}) {
 
-    // const [selectedRow, setSelectedRow] = useState(null);
-
-    // const handleRowSelection = (newSelectionModel) => {
-    //     const newSelectedRow = newSelectionModel.length > 0 ? newSelectionModel[0] : null;
-    //     setSelectedRow(newSelectedRow);
-    // };
-
-    // const getSelectedRowData = () => {
-    //     if (selectedRow === null) {
-    //         return null; 
-    //     }
-    //     return rows.find(row => row.id === selectedRow);
-    // };
-
-    // useEffect(() => {
-    //     const selectedRowData = getSelectedRowData();
-    //     onRowSelect(selectedRowData);
-    // }, [selectedRow, rows, onRowSelect]);
-    console.log('tablecolumns', columns)
-    console.log('tablerows', rows)
     return (
         <div>
             <Paper sx={{
@@ -36,11 +14,7 @@ export default function Table({ rows, columns, text,
                 <DataGrid
                     rows={rows}
                     columns={columns}
-                    // initialState={{ pagination: { paginationModel } }}
                     pageSizeOptions={[5, 10]}
-                    // checkboxSelection
-                    // selectionModel={selectedRow}
-                    // onRowSelectionModelChange={handleRowSelection}
                     sx={{
                         border: 0,
                         '& .MuiDataGrid-columnHeaders': {

@@ -22,7 +22,6 @@ export const AnomalyCols = [
     { field: 'asset_id', headerName: 'asset_id', width: 400 },
     { field: 'asset_name', headerName: 'asset_name', width: 400 },
     { field: 'created_at', headerName: 'time', width: 200 },
-    // { field: 'endTime', headerName: 'end_at', width: 200 },
     { field: 'model_result', headerName: 'imbalance_status', width: 200 },
     { field: 'model_value', headerName: 'imbalnace_score', width: 200 },
 ]

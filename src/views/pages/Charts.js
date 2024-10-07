@@ -41,9 +41,6 @@ export default function Charts() {
   const availableIds = ids_assets[asset] || [];
   const location = useLocation();
   const { bookmarkParams } = location.state || {};
-  const [bookmarkshow, setBookmarkshow] = useState(false)
-
-  console.log('columns', columns)
 
   const eUnixTime = () => {
     if (eDate.current && eTime.current) {
@@ -55,7 +52,6 @@ export default function Charts() {
         console.error("Invalid date/time string:", eDateTimeString);
         return null;
       }
-      // return null;
     }
   }
 
@@ -81,7 +77,6 @@ export default function Charts() {
 
         .then(result => {
           const uniqueData = addingUniqueId(result);
-          // console.log('uniqueData', uniqueData)
           setTableRows(uniqueData);
           setColumns(ProduceCols(checkboxesRef.current));
 
@@ -292,7 +287,6 @@ export default function Charts() {
             ref={checkboxesRef}
           />
         </div>
-        {/* {!isTableVisible && !isChartsVisible && <p>No data to display. Please make a selection and submit.</p>} */}
         {isTableVisible && <Table rows={tableRows} columns={columns} text='mb-20' />}
         {isChartsVisible && <Button type='submit' name='Bookmark All' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
                                            hover:bg-blue-600 focus:outline-none focus:ring-2
@@ -313,7 +307,6 @@ export default function Charts() {
           </div>
         ))}
       </div>
-
     </div>
   )
 };

@@ -3,7 +3,6 @@ import React from 'react'
 
 export default function Gauge({opt, val}) {
 
-
   const volt_options = {
     tooltip: {
       formatter: '{a} <br/>{b} : {c}%'
