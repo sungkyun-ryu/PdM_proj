@@ -1,60 +1,70 @@
 import React from 'react'
 import Nav from '../layouts/Nav'
-import BookmarkTable from '../../components/BookmarkTable'
-import Button from '../../components/Button'
+import AnomalyTable from '../../components/BookmarkTable'
+// import Button from '../../components/Button'
 import axios from 'axios'
-import { BookmarkCols } from '../../functions/ProduceCols'
+import { AnomalyCols } from '../../functions/ProduceCols'
 import { useState, useEffect } from 'react'
 import { addingUniqueId } from '../../functions/ProduceRows'
 import CheckLogin from '../../components/CheckLogin'
 
+export default function Anomaly() {
 
-export default function Bookmark() {
-
-    const [bookmarkColumns, setBookmarkColumns] = useState([]);
-    const [bookmarkRows, setBookmarkRows] = useState([]);
-    const [isBookmarkTableVisible, setIsBookmarkTableVisible] = useState(false);
+    const [anomalyColumns, setAnomalyColumns] = useState([]);
+    const [anomalyRows, setAnomalyRows] = useState([]);
+    const [isAnomalyTableVisible, setIsAnomalyTableVisible] = useState(false);
     const userid = sessionStorage.getItem('userid')
-    // const [multiCheck, setMultiCheck] = useState(false)
 
-    const loadBookmark = async () => {
+    const convertToKST = (timestamp) => {
+        const date = new Date(timestamp * 1000); // Convert to milliseconds
+        const options = {
+          timeZone: 'Asia/Seoul',
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        };
+        return date.toLocaleString('ko-KR', options);
+      };
+
+    const loadAnomaly = async () => {
         const token = sessionStorage.getItem('Token')
         try { 
             const response = await axios.get(
-                'http://192.168.0.126:8080/charts/loadbookmark', {
+                'http://192.168.0.126:8080/anomaly', {
                     headers: {
                         'Authorization': `${token}`, 
                         'Content-Type': 'application/json', 
                     },
                 })
-                // .then(resp => console.log('받은 데이터', resp))
                 .then(result => {
                     const uniqueData = addingUniqueId(result.data);
-                    console.log('북마크 유니크', uniqueData)
-                    setBookmarkRows(uniqueData);
-                    setBookmarkColumns(BookmarkCols);
+                    setAnomalyRows(uniqueData);
+                    setAnomalyColumns(AnomalyCols);
 
                     if (uniqueData.length > 0) {
-                      setIsBookmarkTableVisible(true);            
+                      setIsAnomalyTableVisible(true);            
                     } else {
-                      setIsBookmarkTableVisible(false);                  
+                      setIsAnomalyTableVisible(false);                  
                       alert('No data available'); 
                     }        
                     return uniqueData; 
                   }                )          
 
         } catch (error) {
-            console.log('loading bookmark error', error)
+            console.log('loading anomaly error', error)
         }
     };   
 
     useEffect(() => {
-        loadBookmark(); 
+        loadAnomaly(); 
     },[]);
 
-    // const deleteBookmark = () => {
-    //     setMultiCheck(prev => !prev)
-    // }
+    useEffect(() => {
+        console.log('AnomalyRows',anomalyRows)
+    }, [anomalyRows])
 
     return (
         <div>
@@ -65,7 +75,7 @@ export default function Bookmark() {
             <div className='px-10 pb-24'>
                 
                 <div className='flex justify-center mb-10 py-10 '>
-                <span className='font bold text-5xl p-3 border-b-4 w-auto border-b-slate-600'>{userid}'s BookMark</span>
+                <span className='font bold text-5xl p-3 border-b-4 w-auto border-b-slate-600'>Anomaly List</span>
                 </div>
                 {/* <div className='pb-4'>
                     <Button type='submit' name='Delete' text='bg-blue-500 text-white px-4 py-1 rounded-full shadow
@@ -74,8 +84,8 @@ export default function Bookmark() {
                                         //    func = {deleteBookmark}
                                            />
                 </div> */}
-                {isBookmarkTableVisible && <BookmarkTable columns={bookmarkColumns} 
-                                                            rows={bookmarkRows}
+                {isAnomalyTableVisible && <AnomalyTable columns={anomalyColumns} 
+                                                            rows={anomalyRows}
                                                             text='mb-20' 
                                                             // multiCheck={multiCheck} 
                                                             />}

@@ -1,10 +1,11 @@
-export const asset_names = ['P.O.REEL', '#1-1 BRIDLE ROLL', 'ENTRY ACCUMULATOR', '#2-3 BRIDLE ROLL', '#3-1 BRIDLE ROLL', 'EXIT ACCUMULATOR',
-    '#4-1 BRIDLE ROLL', 'TENSION REEL', '#1 P.O.REEL', '#2 P.O.REEL', '#1-1 BRIDLE ROLL', 'INLET SEAL ROLL UPPER', '#2-1 BRIDLE ROLL',
-    '#3-2 BRIDLE ROLL', 'OUTLET SEAL ROLL UPPER', '#4-2 BRIDLE ROLL', 'TENSION REEL', '#1-2 BRIDLE ROLL', 'ENTRY ACCUMULATOR',
-    '#2-1 BRIDLE ROLL', '#3-3 BRIDLE ROLL', '#4-1 BRIDLE ROLL', 'EXIT ACCUMULATOR', '#5-2 BRIDLE ROLL', 'TENSION REEL',
-    'LEFT REEL', 'MILL', 'RIGHT REEL', 'DCM COOLING BLOWER', 'LEFT REEL', 'MILL', 'RIGHT REEL', 'DCM COOLING BLOWER',
-    'UNCOILER', 'ENTRY BRIDLE ROLL', 'RECOILER', 'EXIT BRIDLE ROLL', 'DECOILER', '1-1 S-ROLL', '1-2 S-ROLL', '1-3 S-ROLL',
-    '1-4 S-ROLL', '2-1 S-ROLL', '2-2 S-ROLL', '2-3 S-ROLL', '2-4 S-ROLL', 'RECOILER'];
+export const asset_names = [ '1-1 S-ROLL', '1-2 S-ROLL', '1-3 S-ROLL',
+    '1-4 S-ROLL', '2-1 S-ROLL', '2-2 S-ROLL', '2-3 S-ROLL', '2-4 S-ROLL', 'ENTRY ACCUMULATOR',   'EXIT ACCUMULATOR',
+     'INLET SEAL ROLL UPPER', 
+     'OUTLET SEAL ROLL UPPER', '#1-1 BRIDLE ROLL', '#1-2 BRIDLE ROLL', 
+    '#2-1 BRIDLE ROLL', '#2-3 BRIDLE ROLL','#3-1 BRIDLE ROLL', '#3-2 BRIDLE ROLL','#3-3 BRIDLE ROLL', '#4-1 BRIDLE ROLL', '#4-2 BRIDLE ROLL', '#5-2 BRIDLE ROLL', 
+    'P.O.REEL', 'TENSION REEL',
+    'LEFT REEL', 'MILL', 'RIGHT REEL', '#1 P.O.REEL', '#2 P.O.REEL', 'DCM COOLING BLOWER', 
+    'UNCOILER', 'ENTRY BRIDLE ROLL', 'RECOILER', 'EXIT BRIDLE ROLL', 'DECOILER', ];
   
 export const col_names = ['rms_x', 'rms_y', 'rms_z', 'rms_xyz', 'vel_rms_x', 'vel_rms_y', 'vel_rms_z', 'vel_rms_xyz',
     'skewness_x', 'skewness_y', 'skewness_z', 'vel_skewness_x', 'vel_skewness_y', 'vel_skewness_z', 'kurtosis_x', 'kurtosis_y', 'kurtosis_z',

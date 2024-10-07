@@ -26,7 +26,7 @@ export default function BookmarkTable({ rows, columns, text, multiCheck, buttonf
             end_at: row.endTime,
             cols: row.cols,
         };
-        console.log('bookmarkParmas===>', bookmarkParams)
+        // console.log('bookmarkParmas===>', bookmarkParams)
         navigate('/charts', { state: { bookmarkParams } });
     };
 
@@ -49,10 +49,10 @@ export default function BookmarkTable({ rows, columns, text, multiCheck, buttonf
                     columns={columns}
                     // initialState={{ pagination: { paginationModel } }}
                     pageSizeOptions={[5, 10]}
-                    checkboxSelection={multiCheck}
+                    // checkboxSelection={multiCheck}
                     selectionModel={selectedRow}
                     onRowSelectionModelChange={handleRowSelection}
-                    // onRowClick={handleRowSelection}
+                    onRowClick={handleRowSelection}
                     sx={{
                         border: 0,
                         '& .MuiDataGrid-columnHeaders': {

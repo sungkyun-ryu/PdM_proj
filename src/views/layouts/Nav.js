@@ -29,7 +29,7 @@ export default function Nav() {
                     <a href='/bookmark' className= 'mr-10 text-2xl text-white'>
                         Bookmark 
                     </a>               
-                    <a href='#' className= 'mr-10 text-2xl text-white'>
+                    <a href='/anomaly' className= 'mr-10 text-2xl text-white'>
                         Anomaly 
                     </a>             
                     </div>         

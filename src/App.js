@@ -5,6 +5,7 @@ import LoginPage from './views/pages/LoginPage';
 import Charts from './views/pages/Charts';
 import Bookmark from './views/pages/Bookmark';
 import WaveDataChart from './views/pages/WaveDataChart';
+import Anomaly from './views/pages/Anomaly';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path='/histwave' element={<WaveDataChart/>} />
         <Route path='/charts' element={<Charts />} />
         <Route path='/bookmark' element={<Bookmark />} />
+        <Route path='/anomaly' element={<Anomaly />}/>
       </Routes>
     </BrowserRouter>
   );

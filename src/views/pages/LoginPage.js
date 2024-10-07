@@ -11,8 +11,8 @@ export default function LoginPage() {
         e.preventDefault();
 
         const credential = {
-            userid: e.target.id.value,
-            password: e.target.password.value
+            userid: e.target.id.value.trim(),
+            password: e.target.password.value.trim()
         };
         console.log(credential)
         try {

@@ -8,31 +8,28 @@ import { asset_names, ids_assets } from "../../components/Assets";
 import { PostDataFetch } from "../../functions/DataFetching";
 import WebSocketStatic from "../../components/WebSocketStatic";
 import CheckLogin from "../../components/CheckLogin";
+import HealthGauge from "../../components/HealthGauge";
 
 export default function MainPage() {
 
-  // const [message, setMessage] = useState('');
+
   const message = useRef('')
   const [staticMessage, setStaticMessage] = useState('');
   const [assetName, setAssetName] = useState('')
-  // const assetName = useRef('')
+
   const [assetId, setAssetId] = useState('');
   const [isChartsVisible, setIsChartsVisible] = useState(false)
-  // const [chartStyle, setChartStyle] = useState('')
+
   const [dataType, setDataType] = useState('')
   const availableIds = ids_assets[assetName] || [];
   const [temp, setTemp] = useState('')
   const [volt, setVolt] = useState('')
-  // const dataOn = useRef(false)
-  // const [dataOn, setDataOn] = useState(false)
-  // const [ready, setReady] = useState(false)
-  // const [chartName, setChartName] = useState('')
+
   let chartName = useRef('')
   const [health, setHealth] = useState(null)
 
   const handleNameChange = (e) => {
     setAssetName(e.target.value)
-    // assetName.current = e.target.value
     setAssetId('')
   }
 
@@ -41,61 +38,31 @@ export default function MainPage() {
     
   };
 
-  // const handleStyleChange = (e) => {
-  //   setChartStyle(e.target.value)
-  //   console.log(chartStyle)
-  // }
-
   const handleTypeChange = (e) => {
     setDataType(e.target.value)
   }
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   if (chartStyle === 'DYNAMIC'){
-  //   setDataOn(prev => !prev)}
-  //   const param = { 'asset_id': assetId }
-  //   PostDataFetch(param, 'http://192.168.0.126:8080/tempvolt')
-  //   .then(result => {    
-  //     setVolt(result.voltage);
-  //     setTemp(result.temperature)
-  //   })
-
-  //   if (chartStyle === 'DYNAMIC') { 
-  //     message.current = `${assetId}, ${chartStyle}, ${dataType}`}
-  //   else { setStaticMessage(assetId + ', ' + chartStyle + ', ' + dataType);}
-  //   setIsChartsVisible(true)
-  // }
-
   const handleSubmit = (e) => {
     
     if (assetId && assetName && dataType) {
-    // setReady(true);       
-    // if(dataOn === false) {
+
     e.preventDefault();
-    // if (chartStyle === 'DYNAMIC'){
-    // setDataOn(prev => !prev)}
-    // if (assetId) {
+
     const param = { 'asset_id': assetId }
     PostDataFetch(param, 'http://192.168.0.126:8080/tempvolt')
     .then(result => {    
       setVolt(result.voltage);
       setTemp(result.temperature)
     })
-  // }
+
     if(dataType === "SPECTRUM") {chartName.current ='Spectrum'}
 
     else {chartName.current ='Waveform'}
-    // if (chartStyle === 'DYNAMIC') { 
-    //   message.current = `${assetId}, ${chartStyle}, ${dataType}`}
-    // else { 
+
     setStaticMessage(assetId + ', STATIC, ' + dataType);
     setIsChartsVisible(true)
     }
-    // else {
-    //   console.log('dataon', dataOn)
-    // }
-  // } 
+  
   else {
     alert('Please Choose All the Options')
   }
@@ -124,11 +91,6 @@ export default function MainPage() {
                   func={handleNameChange} d_value={'Please Select Asset Name'}
                 />
               </label>
-
-              {/* <label className="flex text-xl font-bold py-3 pr-8 items-center"> <span>Data Type :</span> &nbsp;
-                <Selection choices={['SPECTRUM', 'WAVEFORM']} text={'font-normal text-lg'}
-                  func={handleTypeChange} d_value={'Chart Type '} />
-              </label>               */}
               </div>
 
               <div > 
@@ -137,16 +99,6 @@ export default function MainPage() {
                   func={handleIdChange} d_value={'Please Select Asset Id '}
                   selectedValue={assetId} />
               </label>
-
-
-              {/* <label className="flex text-xl font-bold py-3 pr-8 items-center" > <span>Chart Style :</span> &nbsp;
-                <Selection choices={(dataType === 'WAVEFORM') ? 
-                ['DYNAMIC', 'STATIC'] : ['STATIC']} text={'font-normal text-lg'}
-                  func={handleStyleChange} d_value={'Chart Style '}
-                  // selectedValue={chartStyle} 
-                  />
-              </label> */}
-
               
               </div>
               <div>
@@ -158,7 +110,6 @@ export default function MainPage() {
             </div>
 
             <Button type='submit' 
-                    // name={(dataOn === false) ? 'START' : 'STOP'}
                     name='START'
                     text={'bg-blue-500 text-white px-4 py-1 rounded-full shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 mr-4'} 
                       />
@@ -176,17 +127,15 @@ export default function MainPage() {
           </span>}          */}
            { `RealTime ${chartName.current} Charts`}
           </span>}         
-          {/* { chartStyle === "DYNAMIC" ? <WebSocketProvider message={message.current} />    
-          : <WebSocketStatic message={staticMessage} /> }       */}
-          {/* { chartStyle === "STATIC" ?  */}
+
           <WebSocketStatic message={staticMessage} datatype={chartName.current} sethealth={setHealth}/> 
-           {/* :<WebSocketProvider message={message.current} />     */}
-          {/* }       */}
-        
+       
         </div>
 
 <div className="flex flex-col w-1/3">
-<div className='h-1/2 w-1/2 flex justify-center' >
+<div className='h-1/2 w-full flex flex-col justify-center items-center'>
+<div className='h-1/2 w-1/2 flex justify-center ' >
+          
             {isChartsVisible && health && (
             <div className="flex flex-col w-full">
             <div className='pb-16 flex justify-center'>
@@ -195,13 +144,23 @@ export default function MainPage() {
             </span>
             </div>
             <div className={`font-bold text-4xl border-4 border-white flex justify-center items-center py-5 px-10 rounded-full m-10
-                        ${(health == 1) ?  'bg-blue-600' : 'bg-red-600' } text-white`}>
-              {(health == 1)  ?  'HEALTHY' : 'CRITICAL' }
+                        ${(health > 0.5) ?  'bg-blue-600' :
+                        (health > .25)? 'bg-yellow-400':
+                         'bg-red-600' } text-white`}>
+              {(health > 0.5)  ?  'HEALTHY' :
+              (health > .25)? 'INSPECT': 
+              'CRITICAL' }
             </div>
             </div>)}
+
+          </div>
+          <div className="h-1/2 w-full pb-32 ">
+          {isChartsVisible && health &&
+           <HealthGauge val={health}/>}
+          </div>
           </div>
 
-        <div className='flex full justify-start pr-20'>          
+        <div className='flex full justify-start'>          
           <div className='h-1/2 w-1/2' >
             {isChartsVisible && (
             <>
@@ -218,7 +177,7 @@ export default function MainPage() {
               <>
               <div className='pb-16 flex justify-center'>
                 <span className='font-bold text-3xl border-b-4 border-black '>
-              Voltage
+              Sensor Voltage
             </span>
             </div>
             <Gauge opt={'volt'} val={volt} /></>)}

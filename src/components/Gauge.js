@@ -3,6 +3,7 @@ import React from 'react'
 
 export default function Gauge({opt, val}) {
 
+
   const volt_options = {
     tooltip: {
       formatter: '{a} <br/>{b} : {c}%'
@@ -14,10 +15,11 @@ export default function Gauge({opt, val}) {
         min: 1.5, 
         max: 3.5, 
         detail: {
-          formatter: '{value}',
+          formatter: function(value) {
+                    return value.toFixed(2); 
+                } ,
           textStyle: {
-            fontSize: 15, 
-            // color: '#000', 
+            fontSize: 15,  
           }
         },
         data: [
@@ -37,6 +39,7 @@ export default function Gauge({opt, val}) {
         center: ['50%', '60%'],
         startAngle: 200,
         endAngle: -20,
+        radius: '60%',
         min: 0,
         max: 60,
         splitNumber: 12,
